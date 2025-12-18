@@ -50,7 +50,19 @@
   <section class="card">
     <div class="row" style="grid-template-columns:1.2fr .8fr .8fr .6fr;">
       <div>
-        <label>Nom du produit / chantier</label>
+        <div>
+  <label>Produit (préréglage)</label>
+  <select id="preset">
+    <option value="">— Choisir un produit —</option>
+  </select>
+  <div class="muted" style="margin-top:6px;">Le choix remplit le calculateur. Tu peux ensuite ajuster.</div>
+</div>
+
+<div>
+  <label>Nom du produit / chantier</label>
+  <input id="productName" placeholder="Ex : Panneau Dibond 3mm 1200x800 + pose" />
+</div>
+
         <input id="productName" placeholder="Ex : Panneau Dibond 3mm 1200x800 + pose" />
       </div>
       <div>
