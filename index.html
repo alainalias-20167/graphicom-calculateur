@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Graphicom — Calculateur Prix de Revient & Vente</title>
+  <style>
+    :root { --b:#111; --g:#666; --bg:#f6f7f9; --w:#fff; --bd:#e5e7eb; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--b);}
+    header{padding:18px 16px; background:var(--w); border-bottom:1px solid var(--bd);}
+    h1{margin:0; font-size:18px;}
+    main{max-width:1100px; margin:0 auto; padding:16px;}
+    .grid{display:grid; grid-template-columns: 1fr; gap:12px;}
+    @media(min-width:980px){ .grid{grid-template-columns: 1.1fr .9fr;} }
+    .card{background:var(--w); border:1px solid var(--bd); border-radius:12px; padding:14px;}
+    .row{display:grid; grid-template-columns: 1.2fr .8fr .8fr .6fr; gap:10px; align-items:end;}
+    .row.head{font-weight:600; color:var(--g); font-size:12px; text-transform:uppercase;}
+    label{display:block; font-size:12px; color:var(--g); margin-bottom:6px;}
+    input, select, button, textarea{
+      width:100%; padding:10px; border:1px solid var(--bd); border-radius:10px; background:#fff; font-size:14px;
+      box-sizing:border-box;
+    }
+    input[type="number"]{text-align:right;}
+    .btns{display:flex; gap:10px; flex-wrap:wrap;}
+    button{cursor:pointer; font-weight:600;}
+    button.primary{background:#111; color:#fff; border-color:#111;}
+    button.ghost{background:#fff;}
+    .muted{color:var(--g); font-size:12px;}
+    .totals{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .kpi{border:1px solid var(--bd); border-radius:12px; padding:12px;}
+    .kpi .t{color:var(--g); font-size:12px;}
+    .kpi .v{font-size:18px; font-weight:700; margin-top:6px;}
+    .kpi .s{font-size:12px; color:var(--g); margin-top:4px;}
+    .hr{height:1px; background:var(--bd); margin:12px 0;}
+    table{width:100%; border-collapse:collapse; font-size:13px;}
+    th,td{border-bottom:1px solid var(--bd); padding:8px; text-align:left;}
+    td.num{text-align:right;}
+    .pill{display:inline-block; padding:4px 8px; border:1px solid var(--bd); border-radius:999px; font-size:12px; color:var(--g);}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Graphicom — Calculateur Prix de Revient & Prix de Vente</h1>
+  <div class="muted">Appli locale (navigateur). Données enregistrées sur cet appareil.</div>
+</header>
+
+<main class="grid">
+
+  <!-- COL 1: LIGNES DE COÛTS -->
+  <section class="card">
+    <div class="row" style="grid-template-columns:1.2fr .8fr .8fr .6fr;">
+      <div>
+        <label>Nom du produit / chantier</label>
+        <input id="productName" placeholder="Ex : Panneau Dibond 3mm 1200x800 + pose" />
+      </div>
+      <div>
+        <label>Unité</label>
+        <select id="unit">
+          <option value="u">unité</option>
+          <option value="m2">m²</option>
+          <option value="ml">ml</option>
+          <option value="lot">lot</option>
+        </select>
+      </div>
+      <div>
+        <label>Quantité</label>
+        <input id="qty" type="number" min="0" step="0.01" value="1" />
+      </div>
+      <div>
+        <label>TVA</label>
+        <select id="vat">
+          <option value="0">0%</option>
+          <option value="5.5">5,5%</option>
+          <option value="10">10%</option>
+          <option value="20" selected>20%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="row head">
+      <div>Ligne de coût</div><div>Qté</div><div>PU (€)</div><div>Total</div>
+    </div>
+    <div id="lines"></div>
+
+    <div class="btns" style="margin-top:12px;">
+      <button class="primary" id="addLine">+ Ajouter une ligne</button>
+      <button class="ghost" id="reset">Réinitialiser</button>
+      <button class="ghost" id="save">Enregistrer</button>
+      <button class="ghost" id="load">Charger</button>
+      <button class="ghost" id="exportCsv">Exporter CSV</button>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="row" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="card" style="padding:12px; border-radius:12px;">
+        <div class="pill">Main d’œuvre</div>
+        <div class="row" style="grid-template-columns:1fr 1fr; margin-top:10px;">
+          <div>
+            <label>Taux horaire interne (€ / h)</label>
+            <input id="laborRate" type="number" min="0" step="0.01" value="35" />
+          </div>
+          <div>
+            <label>Heures</label>
+            <input id="laborHours" type="number" min="0" step="0.05" value="0" />
+          </div>
+        </div>
+        <div class="muted">Inclure ici production + pose + conduite si besoin.</div>
+      </div>
+
+      <div class="card" style="padding:12px; border-radius:12px;">
+        <div class="pill">Frais fixes / structure</div>
+        <div class="row" style="grid-template-columns:1fr 1fr; margin-top:10px;">
+          <div>
+            <label>% sur coûts directs</label>
+            <input id="overheadPct" type="number" min="0" step="0.1" value="15" />
+          </div>
+          <div>
+            <label>Forfait (€)</label>
+            <input id="overheadFlat" type="number" min="0" step="0.01" value="0" />
+          </div>
+        </div>
+        <div class="muted">Ex : atelier, énergie, admin, pertes, SAV.</div>
+      </div>
+
+      <div class="card" style="padding:12px; border-radius:12px;">
+        <div class="pill">Objectif de vente</div>
+        <div class="row" style="grid-template-columns:1fr 1fr; margin-top:10px;">
+          <div>
+            <label>Marge (%)</label>
+            <input id="marginPct" type="number" min="0" step="0.1" value="40" />
+          </div>
+          <div>
+            <label>ou Coefficient</label>
+            <input id="coef" type="number" min="0" step="0.01" value="" placeholder="ex : 2.10" />
+          </div>
+        </div>
+        <div class="muted">Si coefficient renseigné, il prime sur la marge.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- COL 2: RESULTATS -->
+  <aside class="card">
+    <h2 style="margin:0 0 10px 0; font-size:16px;">Résultats</h2>
+    <div class="totals">
+      <div class="kpi">
+        <div class="t">Coûts matières & options</div>
+        <div class="v" id="k_mat">0,00 €</div>
+        <div class="s">Somme des lignes</div>
+      </div>
+      <div class="kpi">
+        <div class="t">Main d’œuvre</div>
+        <div class="v" id="k_labor">0,00 €</div>
+        <div class="s"><span id="k_lh">0</span> h × <span id="k_lr">0</span> €/h</div>
+      </div>
+      <div class="kpi">
+        <div class="t">Frais fixes / structure</div>
+        <div class="v" id="k_ovh">0,00 €</div>
+        <div class="s"><span id="k_ovhp">0</span>% + forfait</div>
+      </div>
+      <div class="kpi">
+        <div class="t">Prix de revient (total)</div>
+        <div class="v" id="k_cost">0,00 €</div>
+        <div class="s">Pour la quantité</div>
+      </div>
+      <div class="kpi">
+        <div class="t">Prix de vente HT</div>
+        <div class="v" id="k_sell_ht">0,00 €</div>
+        <div class="s"><span id="k_margin_used">marge</span></div>
+      </div>
+      <div class="kpi">
+        <div class="t">Prix de vente TTC</div>
+        <div class="v" id="k_sell_ttc">0,00 €</div>
+        <div class="s">TVA <span id="k_vat">20</span>%</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <h3 style="margin:0 0 10px 0; font-size:14px;">Détail unitaire</h3>
+    <table>
+      <tbody>
+        <tr><td>Prix de revient / <span id="u_unit">u</span></td><td class="num" id="u_cost">0,00 €</td></tr>
+        <tr><td>Vente HT / <span id="u_unit2">u</span></td><td class="num" id="u_sell_ht">0,00 €</td></tr>
+        <tr><td>Vente TTC / <span id="u_unit3">u</span></td><td class="num" id="u_sell_ttc">0,00 €</td></tr>
+      </tbody>
+    </table>
+
+    <div class="hr"></div>
+
+    <label>Notes (client, contraintes, références matières, etc.)</label>
+    <textarea id="notes" rows="6" placeholder="Ex : Dibond 3mm + vinyle quadri + lamination, pose nacelle, délais..."></textarea>
+
+    <div class="muted" style="margin-top:8px;">
+      Astuce : tu peux créer des lignes type “Déplacement”, “Nacelle”, “Quincaillerie”, “Repas”, etc.
+    </div>
+  </aside>
+
+</main>
+
+<script>
+  const fmt = (n) => (Number(n || 0)).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+  const byId = (id) => document.getElementById(id);
+
+  const defaultLine = () => ({ label: "Matière / Option", qty: 1, pu: 0 });
+
+  let state = {
+    productName: "",
+    unit: "u",
+    qty: 1,
+    vat: 20,
+    lines: [ defaultLine() ],
+    laborRate: 35,
+    laborHours: 0,
+    overheadPct: 15,
+    overheadFlat: 0,
+    marginPct: 40,
+    coef: "",
+    notes: ""
+  };
+
+  function renderLines(){
+    const container = byId('lines');
+    container.innerHTML = "";
+    state.lines.forEach((ln, i) => {
+      const row = document.createElement('div');
+      row.className = "row";
+      row.style.gridTemplateColumns = "1.2fr .8fr .8fr .6fr";
+      row.innerHTML = `
+        <div>
+          <label>Libellé</label>
+          <input data-k="label" data-i="${i}" value="${escapeHtml(ln.label)}" />
+          <div class="btns" style="margin-top:6px;">
+            <button class="ghost" type="button" data-act="dup" data-i="${i}">Dupliquer</button>
+            <button class="ghost" type="button" data-act="del" data-i="${i}">Supprimer</button>
+          </div>
+        </div>
+        <div>
+          <label>Qté</label>
+          <input data-k="qty" data-i="${i}" type="number" min="0" step="0.01" value="${ln.qty}" />
+        </div>
+        <div>
+          <label>PU (€)</label>
+          <input data-k="pu" data-i="${i}" type="number" min="0" step="0.01" value="${ln.pu}" />
+        </div>
+        <div>
+          <label>Total</label>
+          <input value="${fmt(ln.qty * ln.pu)}" disabled />
+        </div>
+      `;
+      container.appendChild(row);
+    });
+
+    container.querySelectorAll('input[data-k]').forEach(inp=>{
+      inp.addEventListener('input', (e)=>{
+        const i = Number(e.target.dataset.i);
+        const k = e.target.dataset.k;
+        state.lines[i][k] = (k === "label") ? e.target.value : Number(e.target.value || 0);
+        recalc();
+        renderLines(); // refresh totals
+      });
+    });
+
+    container.querySelectorAll('button[data-act]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const i = Number(e.target.dataset.i);
+        const act = e.target.dataset.act;
+        if(act === "del"){
+          state.lines.splice(i,1);
+          if(state.lines.length === 0) state.lines.push(defaultLine());
+        }
+        if(act === "dup"){
+          state.lines.splice(i+1, 0, {...state.lines[i]});
+        }
+        renderLines();
+        recalc();
+      });
+    });
+  }
+
+  function bindTopFields(){
+    const map = [
+      ["productName","productName"],
+      ["unit","unit"],
+      ["qty","qty"],
+      ["vat","vat"],
+      ["laborRate","laborRate"],
+      ["laborHours","laborHours"],
+      ["overheadPct","overheadPct"],
+      ["overheadFlat","overheadFlat"],
+      ["marginPct","marginPct"],
+      ["coef","coef"],
+      ["notes","notes"],
+    ];
+    map.forEach(([id,key])=>{
+      const el = byId(id);
+      el.value = state[key] ?? "";
+      el.addEventListener('input', ()=>{
+        state[key] = (el.type === "number" || id === "vat" || id === "overheadPct" || id === "marginPct") ? Number(el.value || 0) : el.value;
+        recalc();
+      });
+      el.addEventListener('change', ()=>{
+        if(id === "unit") { byId("u_unit").textContent = state.unit; byId("u_unit2").textContent = state.unit; byId("u_unit3").textContent = state.unit; }
+        recalc();
+      });
+    });
+    byId("u_unit").textContent = state.unit;
+    byId("u_unit2").textContent = state.unit;
+    byId("u_unit3").textContent = state.unit;
+  }
+
+  function recalc(){
+    const mat = state.lines.reduce((s,ln)=> s + (Number(ln.qty||0) * Number(ln.pu||0)), 0);
+    const labor = Number(state.laborRate||0) * Number(state.laborHours||0);
+    const direct = mat + labor;
+
+    const ovh = (direct * (Number(state.overheadPct||0)/100)) + Number(state.overheadFlat||0);
+    const cost = direct + ovh;
+
+    const coef = Number(state.coef || 0);
+    const useCoef = coef > 0;
+    const marginPct = Number(state.marginPct||0)/100;
+
+    // Marge (%) ici = (PV - PR) / PV  => PV = PR / (1 - marge)
+    const sellHT = useCoef ? (cost * coef) : (marginPct < 1 ? cost / (1 - marginPct) : cost);
+    const vatRate = Number(state.vat||0)/100;
+    const sellTTC = sellHT * (1 + vatRate);
+
+    const qty = Number(state.qty||1) || 1;
+    const uCost = cost / qty;
+    const uSellHT = sellHT / qty;
+    const uSellTTC = sellTTC / qty;
+
+    byId("k_mat").textContent = fmt(mat);
+    byId("k_labor").textContent = fmt(labor);
+    byId("k_lh").textContent = Number(state.laborHours||0).toLocaleString('fr-FR', {maximumFractionDigits:2});
+    byId("k_lr").textContent = Number(state.laborRate||0).toLocaleString('fr-FR', {maximumFractionDigits:2});
+    byId("k_ovh").textContent = fmt(ovh);
+    byId("k_ovhp").textContent = Number(state.overheadPct||0).toLocaleString('fr-FR', {maximumFractionDigits:1});
+    byId("k_cost").textContent = fmt(cost);
+    byId("k_sell_ht").textContent = fmt(sellHT);
+    byId("k_sell_ttc").textContent = fmt(sellTTC);
+    byId("k_vat").textContent = Number(state.vat||0).toLocaleString('fr-FR', {maximumFractionDigits:1});
+    byId("k_margin_used").textContent = useCoef ? `Coefficient ${coef.toLocaleString('fr-FR')}` : `Marge ${Number(state.marginPct||0).toLocaleString('fr-FR')}%`;
+
+    byId("u_cost").textContent = fmt(uCost);
+    byId("u_sell_ht").textContent = fmt(uSellHT);
+    byId("u_sell_ttc").textContent = fmt(uSellTTC);
+  }
+
+  function escapeHtml(s){
+    return String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  }
+
+  // Buttons
+  byId("addLine").addEventListener('click', ()=>{
+    state.lines.push(defaultLine());
+    renderLines(); recalc();
+  });
+
+  byId("reset").addEventListener('click', ()=>{
+    state = {
+      productName: "", unit:"u", qty:1, vat:20,
+      lines:[defaultLine()],
+      laborRate:35, laborHours:0,
+      overheadPct:15, overheadFlat:0,
+      marginPct:40, coef:"",
+      notes:""
+    };
+    bindTopFields(); renderLines(); recalc();
+  });
+
+  byId("save").addEventListener('click', ()=>{
+    const key = "graphicom_pricing_v1";
+    localStorage.setItem(key, JSON.stringify(state));
+    alert("Enregistré sur cet appareil.");
+  });
+
+  byId("load").addEventListener('click', ()=>{
+    const key = "graphicom_pricing_v1";
+    const raw = localStorage.getItem(key);
+    if(!raw){ alert("Aucune sauvegarde trouvée."); return; }
+    state = JSON.parse(raw);
+    bindTopFields(); renderLines(); recalc();
+    alert("Chargé.");
+  });
+
+  byId("exportCsv").addEventListener('click', ()=>{
+    const rows = [];
+    rows.push(["Produit", state.productName]);
+    rows.push(["Unité", state.unit]);
+    rows.push(["Quantité", state.qty]);
+    rows.push(["TVA", state.vat + "%"]);
+    rows.push([]);
+    rows.push(["Lignes", "Qté", "PU", "Total"]);
+    state.lines.forEach(ln => rows.push([ln.label, ln.qty, ln.pu, (ln.qty*ln.pu)]));
+    rows.push([]);
+    const mat = state.lines.reduce((s,ln)=> s + (ln.qty*ln.pu), 0);
+    const labor = state.laborRate * state.laborHours;
+    const direct = mat + labor;
+    const ovh = direct*(state.overheadPct/100) + Number(state.overheadFlat||0);
+    const cost = direct + ovh;
+    const coef = Number(state.coef||0);
+    const useCoef = coef>0;
+    const marginPct = (state.marginPct||0)/100;
+    const sellHT = useCoef ? cost*coef : (marginPct<1 ? cost/(1-marginPct) : cost);
+    const sellTTC = sellHT*(1+(state.vat/100));
+    rows.push(["Coûts lignes", mat]);
+    rows.push(["Main d’œuvre", labor]);
+    rows.push(["Frais structure", ovh]);
+    rows.push(["Prix de revient", cost]);
+    rows.push(["Vente HT", sellHT]);
+    rows.push(["Vente TTC", sellTTC]);
+    rows.push([]);
+    rows.push(["Notes", state.notes]);
+
+    const csv = rows.map(r => r.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(";")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "graphicom_calcul.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // Init
+  bindTopFields();
+  renderLines();
+  recalc();
+</script>
+</body>
+</html>
