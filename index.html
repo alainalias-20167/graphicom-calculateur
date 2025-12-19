@@ -441,11 +441,345 @@
     a.remove();
     URL.revokeObjectURL(url);
   });
+  // =====================
+// 1) RÈGLES GLOBALES
+// =====================
+const RULES = {
+  smallAreaThreshold_m2: 1.0,
+  smallAreaMarkupPct: 0,      // <-- à renseigner (ex: 20)
+  rateAtelier: 0,             // €/h
+  ratePose: 0,                // €/h
+  rateInfographie: 80,        // €/h (validé)
+};
+
+// =====================
+// 2) CATALOGUE COMPOSANTS
+// =====================
+const COMPONENTS = {
+  // --- Support / Matières (exemples, PU à remplir) ---
+  dibond_2:  { key:"dibond_2",  label:"Dibond 2 mm", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  dibond_3:  { key:"dibond_3",  label:"Dibond 3 mm", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  dibond_4:  { key:"dibond_4",  label:"Dibond 4 mm", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+
+  pvc_10:    { key:"pvc_10",    label:"PVC 10 mm",   unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+
+  plexi_opale:{key:"plexi_opale",label:"Plexi opale", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+
+  // --- Impression / Films ---
+  vinyle_imprime:{ key:"vinyle_imprime", label:"Vinyle imprimé", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  vinyle_coule: { key:"vinyle_coule", label:"Vinyle coulé", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  vinyle_teinte:{ key:"vinyle_teinte", label:"Vinyle teinté masse", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  lamination:   { key:"lamination", label:"Lamination", unit:"m2", defaultPu:0, group:"Finition", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  film_depoli:  { key:"film_depoli", label:"Film dépoli", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  microperfore: { key:"microperfore", label:"Film microperforé", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  retro_reflech:{ key:"retro_reflech", label:"Film rétro-réfléchissant", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+
+  uv_direct:    { key:"uv_direct", label:"Impression UV directe", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  encre_uv:     { key:"encre_uv", label:"Encre / coût machine UV", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+
+  // --- Éclairage (ml + alim oui/non) ---
+  led_ml:       { key:"led_ml", label:"LED", unit:"ml", defaultPu:0, group:"Éclairage", smallAreaEligible:false,
+              qtyFormula: ({L,H,qty}) => 2*(L+H)*qty }, // périmètre (modifiable)
+  alim_u:       { key:"alim_u", label:"Alimentation", unit:"u", defaultPu:0, group:"Éclairage", smallAreaEligible:false,
+              qtyFormula: ({qty}) => qty },
+  cablage_forfait:{ key:"cablage_forfait", label:"Câblage", unit:"forfait", defaultPu:0, group:"Éclairage", smallAreaEligible:false,
+              qtyFormula: () => 1 },
+
+  // --- Atelier / Prépa ---
+  calage_fichier:{ key:"calage_fichier", label:"Calage / préparation fichier", unit:"forfait", defaultPu:0, group:"Atelier", smallAreaEligible:false,
+              qtyFormula: () => 1 },
+
+  // Temps atelier = surfaceTot * atelier_h_per_m2 (injecté par produit)
+  atelier_temps:{ key:"atelier_temps", label:"Temps atelier", unit:"h", defaultPu: () => RULES.rateAtelier, group:"Main d’œuvre", smallAreaEligible:false,
+              qtyFormula: ({surfaceTot, product}) => surfaceTot * (product.atelier_h_per_m2 || 0) },
+
+  // --- Découpe à forme (temps machine saisi par l'utilisateur) ---
+  decoupe_forme_h:{ key:"decoupe_forme_h", label:"Découpe à forme (temps machine)", unit:"h", defaultPu:0, group:"Usinage", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.decoupe_forme_h || 0) },
+
+  // --- Pose (temps pose saisi ou preset) ---
+  pose_h:       { key:"pose_h", label:"Pose", unit:"h", defaultPu: () => RULES.ratePose, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.pose_h || 0) },
+
+  deplacement_forfait:{ key:"deplacement_forfait", label:"Déplacement", unit:"forfait", defaultPu:0, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => (user.deplacement_on ? 1 : 0) },
+
+  nacelle_j:    { key:"nacelle_j", label:"Nacelle", unit:"jour", defaultPu:0, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.nacelle_j || 0) },
+
+  poteaux_nb:   { key:"poteaux_nb", label:"Poteaux", unit:"u", defaultPu:0, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.poteaux_nb || 0) },
+
+  plots_nb:     { key:"plots_nb", label:"Plots béton", unit:"u", defaultPu:0, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.plots_nb || 0) },
+
+  scellement_h: { key:"scellement_h", label:"Scellement / terrassement", unit:"h", defaultPu: () => RULES.ratePose, group:"Pose", smallAreaEligible:false,
+              qtyFormula: ({user}) => Number(user.scellement_h || 0) },
+
+  // --- Infographie ---
+  infographie_h:{ key:"infographie_h", label:"Infographie", unit:"h", defaultPu: () => RULES.rateInfographie, group:"Infographie", smallAreaEligible:false,
+              qtyFormula: ({user}) => (user.infographie_on ? Number(user.infographie_h || 0) : 0) },
+};
+
+// =====================
+// 3) MODES DE POSE (définissent quels composants sont activés)
+// =====================
+const POSE_MODES = {
+  SANS_POSE: { key:"SANS_POSE", label:"Sans pose", components: [] },
+
+  MUR_ECHELLE: { key:"MUR_ECHELLE", label:"Pose murale (échelle)",
+    components: ["pose_h", "deplacement_forfait"] },
+
+  MUR_NACELLE: { key:"MUR_NACELLE", label:"Pose murale (nacelle)",
+    components: ["pose_h", "deplacement_forfait", "nacelle_j"] },
+
+  POTEAUX_PLOTS: { key:"POTEAUX_PLOTS", label:"Poteaux + plots béton",
+    components: ["pose_h", "deplacement_forfait", "poteaux_nb", "plots_nb", "scellement_h"] },
+
+  STRUCTURE_EXISTANTE: { key:"STRUCTURE_EXISTANTE", label:"Sur structure existante",
+    components: ["pose_h", "deplacement_forfait"] },
+
+  INTERIEUR: { key:"INTERIEUR", label:"Pose intérieure",
+    components: ["pose_h", "deplacement_forfait"] },
+};
+
+// =====================
+// 4) CATALOGUE PRODUITS (ce qu’on a verrouillé)
+// =====================
+const PRODUCTS = {
+  panneau_dibond_std: {
+    key:"panneau_dibond_std",
+    label:"Panneau Dibond – Standard",
+    atelier_h_per_m2: 0.25,
+    components: [
+      {key:"dibond_3", defaultOn:true},
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"lamination", defaultOn:false},
+      {key:"uv_direct", defaultOn:false},
+      {key:"encre_uv", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"decoupe_forme_h", defaultOn:false},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","POTEAUX_PLOTS","STRUCTURE_EXISTANTE"]
+  },
+
+  vitrophanie: {
+    key:"vitrophanie",
+    label:"Vitrophanie",
+    atelier_h_per_m2: 0.25,
+    components: [
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"vinyle_coule", defaultOn:false},
+      {key:"film_depoli", defaultOn:false},
+      {key:"microperfore", defaultOn:false},
+      {key:"lamination", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"decoupe_forme_h", defaultOn:false},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","INTERIEUR","MUR_ECHELLE","MUR_NACELLE"] // extérieur = MUR_ECHELLE ou NACELLE selon choix
+  },
+
+  enseigne_bandeau_caisson: {
+    key:"enseigne_bandeau_caisson",
+    label:"Enseigne – Bandeau caisson",
+    atelier_h_per_m2: 0.50,
+    components: [
+      {key:"dibond_3", defaultOn:false},      // si fond en dibond
+      {key:"plexi_opale", defaultOn:true},    // face opale par défaut
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"lamination", defaultOn:false},
+      {key:"led_ml", defaultOn:false},
+      {key:"alim_u", defaultOn:false},
+      {key:"cablage_forfait", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
+  },
+
+  enseigne_lettres: {
+    key:"enseigne_lettres",
+    label:"Enseigne – Lettres découpées",
+    atelier_h_per_m2: 0.75,
+    components: [
+      {key:"pvc_10", defaultOn:true},        // matière par défaut (à ajuster)
+      {key:"decoupe_forme_h", defaultOn:true},
+      {key:"vinyle_teinte", defaultOn:false},
+      {key:"uv_direct", defaultOn:false},
+      {key:"encre_uv", defaultOn:false},
+      {key:"led_ml", defaultOn:false},
+      {key:"alim_u", defaultOn:false},
+      {key:"cablage_forfait", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
+  },
+
+  enseigne_drapeau: {
+    key:"enseigne_drapeau",
+    label:"Enseigne – Drapeau",
+    atelier_h_per_m2: 0.60,
+    components: [
+      {key:"dibond_3", defaultOn:true},
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"lamination", defaultOn:false},
+      {key:"led_ml", defaultOn:false},
+      {key:"alim_u", defaultOn:false},
+      {key:"cablage_forfait", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
+  },
+
+  enseigne_panneau: {
+    key:"enseigne_panneau",
+    label:"Enseigne – Panneau d’enseigne",
+    atelier_h_per_m2: 0.35,
+    components: [
+      {key:"dibond_3", defaultOn:true},
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"lamination", defaultOn:false},
+      {key:"led_ml", defaultOn:false},       // si rampe/led ml (tu peux renommer rampe_ml)
+      {key:"alim_u", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","POTEAUX_PLOTS"]
+  },
+
+  signaletique: {
+    key:"signaletique",
+    label:"Signalétique",
+    atelier_h_per_m2: 0.30,
+    components: [
+      {key:"dibond_3", defaultOn:true},
+      {key:"vinyle_imprime", defaultOn:true},
+      {key:"lamination", defaultOn:false},
+      {key:"retro_reflech", defaultOn:false},
+      {key:"calage_fichier", defaultOn:true},
+      {key:"atelier_temps", defaultOn:true},
+      {key:"decoupe_forme_h", defaultOn:false},
+      {key:"infographie_h", defaultOn:false},
+    ],
+    poseModes: ["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","POTEAUX_PLOTS","INTERIEUR"]
+  }
+};
+
+// =====================
+// 5) MOTEUR DE CALCUL (unique)
+// =====================
+function calcQuote({productKey, L, H, qty, selectedComponentKeys, poseModeKey, user}) {
+  const product = PRODUCTS[productKey];
+  if (!product) throw new Error("Produit inconnu");
+
+  const surfaceUnit = L * H;                 // m²
+  const surfaceTot  = surfaceUnit * qty;
+
+  // Instancie les lignes
+  const lines = [];
+
+  // 1) Composants cochés
+  for (const cKey of selectedComponentKeys) {
+    const def = COMPONENTS[cKey];
+    if (!def) continue;
+
+    const pu = (typeof def.defaultPu === "function") ? def.defaultPu() : def.defaultPu;
+    const qtyLine = def.qtyFormula({L,H,qty,surfaceTot,product,user});
+    if (!qtyLine || qtyLine === 0) continue;
+
+    lines.push({
+      key: def.key,
+      label: def.label,
+      unit: def.unit,
+      qty: qtyLine,
+      pu: pu,
+      group: def.group,
+      smallAreaEligible: !!def.smallAreaEligible
+    });
+  }
+
+  // 2) Composants de pose (mode)
+  const poseMode = POSE_MODES[poseModeKey] || POSE_MODES.SANS_POSE;
+  for (const cKey of poseMode.components) {
+    if (!selectedComponentKeys.includes(cKey)) { // évite doublons
+      const def = COMPONENTS[cKey];
+      if (!def) continue;
+      const pu = (typeof def.defaultPu === "function") ? def.defaultPu() : def.defaultPu;
+      const qtyLine = def.qtyFormula({L,H,qty,surfaceTot,product,user});
+      if (!qtyLine || qtyLine === 0) continue;
+
+      lines.push({
+        key: def.key,
+        label: def.label,
+        unit: def.unit,
+        qty: qtyLine,
+        pu: pu,
+        group: def.group,
+        smallAreaEligible: !!def.smallAreaEligible
+      });
+    }
+  }
+
+  // 3) Totaux lignes
+  for (const ln of lines) ln.total = ln.qty * ln.pu;
+
+  // 4) Majoration < 1m² (sur lignes éligibles seulement)
+  let markup = 0;
+  if (surfaceUnit < RULES.smallAreaThreshold_m2 && RULES.smallAreaMarkupPct > 0) {
+    const rate = RULES.smallAreaMarkupPct / 100;
+    for (const ln of lines) {
+      if (ln.smallAreaEligible) {
+        const extra = ln.total * rate;
+        ln.total += extra;
+        markup += extra;
+      }
+    }
+  }
+
+  const totalHT = lines.reduce((s,l)=>s+l.total,0);
+
+  return {
+    productLabel: product.label,
+    surfaceUnit, surfaceTot,
+    markup,
+    lines,
+    totalHT
+  };
+}
 
   // Init
   bindTopFields();
   renderLines();
   recalc();
+  console.log("RULES OK", RULES);
+console.log("COMPONENTS OK", COMPONENTS);
+
 </script>
 </body>
 </html>
+
+
