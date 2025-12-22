@@ -63,6 +63,27 @@
       </div>
       <div>
         <label>Produit (préréglage)</label>
+        <div class="card" style="margin-top:12px;">
+  <div class="card-title">Composition (sandwich)</div>
+
+  <div id="comp_list" style="font-size:13px; line-height:1.45; margin-top:8px;"></div>
+
+  <div style="display:flex; gap:12px; margin-top:10px; flex-wrap:wrap;">
+    <div class="pill">
+      <div style="font-size:12px; opacity:.75;">Sandwich (€/m²)</div>
+      <div id="comp_sandwich_m2" style="font-size:18px; font-weight:700;">0,00 €</div>
+    </div>
+    <div class="pill">
+      <div style="font-size:12px; opacity:.75;">Sandwich total (surface)</div>
+      <div id="comp_sandwich_total" style="font-size:18px; font-weight:700;">0,00 €</div>
+    </div>
+  </div>
+
+  <div style="font-size:12px; opacity:.7; margin-top:8px;">
+    Note : le “sandwich” = matières au m² (hors atelier, pose, infographie, déplacement, nacelle…).
+  </div>
+</div>
+
         <select id="preset" disabled>
           <option value="">— Choisir un produit —</option>
         </select>
@@ -425,6 +446,10 @@
       qtyFormula: ({user}) => 0
     }
   };
+  const SANDWICH_GROUPS = ["Matière"]; 
+// Si tes composants matières n'ont pas group:"Matière", adapte ici.
+// Exemple possible: ["Matière","Support","Vinyle","Encre","Lamination"]
+
 
   // =====================
   // 3) MODES DE POSE (déclenchent des composants)
@@ -933,6 +958,81 @@
       });
     });
   }
+  function euro(v){
+  return (v||0).toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+}
+
+// Renvoie un objet: {items:[{label, pu, unit}], sandwich_m2}
+function getSandwichForProduct(productKey){
+  const p = PRODUCTS[productKey];
+  if(!p) return {items:[], sandwich_m2:0};
+
+  // Lignes actuellement actives (après chargement produit) : on s’appuie sur state.lines
+  // On prend uniquement celles "matières" au m² (ou group matière) et qui sont "par m²"
+  const items = [];
+  let sandwich_m2 = 0;
+
+  for(const ln of (state.lines || [])){
+    // On exclut la MO / pose / infographie / options forfait etc.
+    if(!SANDWICH_GROUPS.includes(ln.group)) continue;
+
+    // On ne garde que celles au m² (unit m2 ou perM2 true selon ton modèle)
+    const isM2 = (ln.unit === "m2") || (ln.per === "m2") || (ln.perM2 === true);
+    if(!isM2) continue;
+
+    // Le PU doit être le PU "au m²"
+    const pu = Number(ln.pu || 0);
+    sandwich_m2 += pu;
+
+    items.push({
+      label: ln.label || ln.name || ln.key,
+      pu,
+      unit: "€/m²"
+    });
+  }
+
+  return {items, sandwich_m2};
+}
+
+function renderComposition(){
+  const productKey = state.productKey;
+  const listEl = document.getElementById("comp_list");
+  const m2El   = document.getElementById("comp_sandwich_m2");
+  const totEl  = document.getElementById("comp_sandwich_total");
+  if(!listEl || !m2El || !totEl) return;
+
+  const {items, sandwich_m2} = getSandwichForProduct(productKey);
+
+  if(!productKey){
+    listEl.innerHTML = "<div style='opacity:.7;'>Choisis un produit pour afficher la composition.</div>";
+    m2El.textContent = euro(0);
+    totEl.textContent = euro(0);
+    return;
+  }
+
+  // Surface unité
+  const L = Number(state.L || 0);
+  const H = Number(state.H || 0);
+  const qty = Number(state.qty || 1);
+  const surfaceUnit = L * H;
+  const surfaceTot  = surfaceUnit * qty;
+
+  // HTML liste
+  if(items.length === 0){
+    listEl.innerHTML = "<div style='opacity:.7;'>Aucun composant “matière au m²” détecté pour ce produit.</div>";
+  } else {
+    listEl.innerHTML = items.map(it => `
+      <div style="display:flex; justify-content:space-between; gap:12px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,.06);">
+        <div>${it.label}</div>
+        <div style="font-weight:600;">${euro(it.pu)} <span style="opacity:.7; font-weight:400;">/m²</span></div>
+      </div>
+    `).join("");
+  }
+
+  m2El.textContent = euro(sandwich_m2);
+  totEl.textContent = euro(sandwich_m2 * surfaceTot);
+}
+
 
   // =====================
   // 8) RENDER KPIs
@@ -958,6 +1058,8 @@
     byId("k_margin_used").textContent = q.useCoef
       ? `Coefficient ${q.coef.toLocaleString('fr-FR',{maximumFractionDigits:2})}`
       : `Marge ${Number(state.marginPct||0).toLocaleString('fr-FR',{maximumFractionDigits:1})}%`;
+    renderComposition();
+
 
     // Met à jour “Qté auto” et “Total” dans l’affichage composants
     const rows = byId("lines").querySelectorAll(".row");
