@@ -9,15 +9,18 @@
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--b);}
     header{padding:18px 16px; background:var(--w); border-bottom:1px solid var(--bd);}
     h1{margin:0; font-size:18px;}
-    main{max-width:1160px; margin:0 auto; padding:16px;}
+    main{max-width:1200px; margin:0 auto; padding:16px;}
     .grid{display:grid; grid-template-columns: 1fr; gap:12px;}
-    @media(min-width:980px){ .grid{grid-template-columns: 1.1fr .9fr;} }
+    @media(min-width:980px){ .grid{grid-template-columns: 1.15fr .85fr;} }
     .card{background:var(--w); border:1px solid var(--bd); border-radius:12px; padding:14px;}
-    .row{display:grid; grid-template-columns: 1.2fr .8fr .8fr .6fr; gap:10px; align-items:end;}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:end;}
+    .row3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; align-items:end;}
+    .row4{display:grid; grid-template-columns: 1.2fr .8fr .8fr .8fr; gap:10px; align-items:end;}
     .row.head{font-weight:600; color:var(--g); font-size:12px; text-transform:uppercase;}
     label{display:block; font-size:12px; color:var(--g); margin-bottom:6px;}
     input, select, button, textarea{
-      width:100%; padding:10px; border:1px solid var(--bd); border-radius:10px; background:#fff; font-size:14px; box-sizing:border-box;
+      width:100%; padding:10px; border:1px solid var(--bd); border-radius:10px; background:#fff;
+      font-size:14px; box-sizing:border-box;
     }
     input[type="number"]{text-align:right;}
     .btns{display:flex; gap:10px; flex-wrap:wrap;}
@@ -35,13 +38,11 @@
     th,td{border-bottom:1px solid var(--bd); padding:8px; text-align:left;}
     td.num{text-align:right;}
     .pill{display:inline-block; padding:4px 8px; border:1px solid var(--bd); border-radius:999px; font-size:12px; color:var(--g);}
-    .two{display:grid; grid-template-columns:1fr; gap:10px;}
-    @media(min-width:720px){ .two{grid-template-columns:1fr 1fr;} }
+    .pillBox{border:1px solid var(--bd); border-radius:12px; padding:10px; min-width:170px;}
     .chk{display:flex; align-items:center; gap:10px;}
     .chk input{width:auto;}
-    .stack{display:grid; gap:8px;}
-    .mini{font-size:12px; color:var(--g);}
-    .tag{display:inline-block; padding:2px 8px; border:1px solid var(--bd); border-radius:999px; font-size:12px; color:var(--g); background:#fff;}
+    .warn{background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:10px; padding:10px; font-size:12px;}
+    .ok{background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:10px; padding:10px; font-size:12px;}
   </style>
 </head>
 <body>
@@ -53,230 +54,257 @@
 <main class="grid">
   <!-- COL 1 -->
   <section class="card">
-    <div class="two">
+
+    <div class="row3">
       <div>
         <label>Famille</label>
-        <select id="family">
-          <option value="">— Choisir une famille —</option>
-        </select>
+        <select id="family"></select>
         <div class="muted" style="margin-top:6px;">Organigramme : Famille → Produit (préréglage).</div>
       </div>
-      <div>
+      <div style="grid-column: span 2;">
         <label>Produit (préréglage)</label>
-        <div class="card" style="margin-top:12px;">
-  <div class="card-title">Composition (sandwich)</div>
-
-  <div id="comp_list" style="font-size:13px; line-height:1.45; margin-top:8px;"></div>
-
-  <div style="display:flex; gap:12px; margin-top:10px; flex-wrap:wrap;">
-    <div class="pill">
-      <div style="font-size:12px; opacity:.75;">Sandwich (€/m²)</div>
-      <div id="comp_sandwich_m2" style="font-size:18px; font-weight:700;">0,00 €</div>
-    </div>
-    <div class="pill">
-      <div style="font-size:12px; opacity:.75;">Sandwich total (surface)</div>
-      <div id="comp_sandwich_total" style="font-size:18px; font-weight:700;">0,00 €</div>
-    </div>
-  </div>
-
-  <div style="font-size:12px; opacity:.7; margin-top:8px;">
-    Note : le “sandwich” = matières au m² (hors atelier, pose, infographie, déplacement, nacelle…).
-  </div>
-</div>
-
-        <select id="preset" disabled>
-          <option value="">— Choisir un produit —</option>
-        </select>
-        <div class="muted" style="margin-top:6px;">Le produit remplit les composants + options.</div>
+        <select id="preset"></select>
+        <div class="muted" style="margin-top:6px;">Le produit remplit la composition + options. Tu peux ensuite ajuster.</div>
       </div>
     </div>
 
     <div class="hr"></div>
 
-    <div class="row" style="grid-template-columns:1.2fr .8fr .8fr .6fr;">
+    <div class="row4">
       <div>
         <label>Nom du produit / chantier</label>
-        <input id="productName" placeholder="Ex : Panneau Dibond 3mm 1200x800 + pose" />
+        <input id="productName" placeholder="Ex : Enseigne panneau 1200×800 + pose nacelle" />
       </div>
       <div>
         <label>Largeur L (m)</label>
-        <input id="L" type="number" min="0" step="0.001" value="1.2" />
+        <input id="L" type="number" min="0" step="0.001" value="1" />
       </div>
       <div>
         <label>Hauteur H (m)</label>
-        <input id="H" type="number" min="0" step="0.001" value="0.8" />
+        <input id="H" type="number" min="0" step="0.001" value="1" />
       </div>
       <div>
         <label>Quantité</label>
-        <input id="qty" type="number" min="0" step="1" value="1" />
+        <input id="qty" type="number" min="0" step="0.01" value="1" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div>
+        <label>Profondeur P (m) (uniquement bandeau caisson)</label>
+        <input id="P" type="number" min="0" step="0.001" value="0.20" />
+        <div class="muted">Utilisée pour calculer la surface développée (face + retours).</div>
+      </div>
+      <div>
+        <label>Heures CNC / m² (si découpe CNC)</label>
+        <input id="cncHperM2" type="number" min="0" step="0.01" value="0.20" />
+        <div class="muted">Estimation modifiable. On pourra la verrouiller par produit ensuite.</div>
       </div>
     </div>
 
     <div class="hr"></div>
 
-    <div class="two">
+    <div class="row" style="align-items:start;">
+      <!-- Options -->
       <div class="card" style="padding:12px;">
         <div class="pill">Options</div>
-        <div class="stack" style="margin-top:10px;">
-          <div class="chk">
-            <input id="infographie_on" type="checkbox" />
-            <label style="margin:0;">Inclure infographie</label>
+
+        <div class="hr"></div>
+
+        <div class="chk">
+          <input id="infog_on" type="checkbox" />
+          <label style="margin:0;">Inclure infographie</label>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>Heures infographie</label>
+            <input id="infog_h" type="number" min="0" step="0.05" value="0" />
           </div>
-          <div class="row" style="grid-template-columns:1fr 1fr;">
-            <div>
-              <label>Heures infographie</label>
-              <input id="infographie_h" type="number" min="0" step="0.25" value="0" />
-            </div>
-            <div>
-              <label>Taux infographie (€/h)</label>
-              <input id="rateInfographie" type="number" min="0" step="0.01" value="80" />
-            </div>
+          <div>
+            <label>Taux infographie (€/h)</label>
+            <input id="infog_rate" type="number" min="0" step="0.01" value="80" />
           </div>
+        </div>
 
-          <div class="hr"></div>
+        <div class="hr"></div>
 
-          <label>Mode de pose</label>
-          <select id="poseMode"></select>
+        <label>Mode de pose</label>
+        <select id="poseMode"></select>
 
-          <div class="row" style="grid-template-columns:1fr 1fr;">
-            <div>
-              <label>Heures pose</label>
-              <input id="pose_h" type="number" min="0" step="0.25" value="0" />
-            </div>
-            <div>
-              <label>Taux pose (€/h)</label>
-              <input id="ratePose" type="number" min="0" step="0.01" value="70" />
-            </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>Heures pose</label>
+            <input id="pose_h" type="number" min="0" step="0.05" value="0" />
           </div>
-
-          <div class="two">
-            <div class="chk">
-              <input id="deplacement_on" type="checkbox" />
-              <label style="margin:0;">Déplacement (forfait)</label>
-            </div>
-            <div>
-              <label>PU déplacement (forfait)</label>
-              <input id="deplacement_pu" type="number" min="0" step="0.01" value="0" />
-            </div>
+          <div>
+            <label>Taux pose (€/h)</label>
+            <input id="pose_rate" type="number" min="0" step="0.01" value="70" />
           </div>
+        </div>
 
-          <div class="two">
-            <div>
-              <label>Nacelle (jours)</label>
-              <input id="nacelle_j" type="number" min="0" step="0.5" value="0" />
-            </div>
-            <div>
-              <label>PU nacelle (€/jour)</label>
-              <input id="nacelle_pu" type="number" min="0" step="0.01" value="0" />
-            </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>Déplacement (forfait €)</label>
+            <input id="depl_forfait" type="number" min="0" step="0.01" value="0" />
           </div>
-
-          <div class="two">
-            <div>
-              <label>Nombre poteaux</label>
-              <input id="poteaux_nb" type="number" min="0" step="1" value="0" />
-            </div>
-            <div>
-              <label>PU poteau (€/u ou €/ml selon choix)</label>
-              <input id="poteaux_pu" type="number" min="0" step="0.01" value="0" />
-            </div>
+          <div>
+            <label>Nacelle (jours)</label>
+            <input id="nacelle_j" type="number" min="0" step="0.1" value="0" />
           </div>
+        </div>
 
-          <div class="two">
-            <div>
-              <label>Plots béton (u)</label>
-              <input id="plots_nb" type="number" min="0" step="1" value="0" />
-            </div>
-            <div>
-              <label>PU plots (€/u)</label>
-              <input id="plots_pu" type="number" min="0" step="0.01" value="0" />
-            </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>PU nacelle (€/jour)</label>
+            <input id="nacelle_pu" type="number" min="0" step="0.01" value="0" />
           </div>
+          <div>
+            <label>Poteaux (nb)</label>
+            <input id="poteaux_nb" type="number" min="0" step="1" value="0" />
+          </div>
+        </div>
 
-          <div class="two">
-            <div>
-              <label>Scellement / terrassement (h)</label>
-              <input id="scellement_h" type="number" min="0" step="0.25" value="0" />
-            </div>
-            <div>
-              <label>Taux scellement (€/h)</label>
-              <input id="rateScellement" type="number" min="0" step="0.01" value="70" />
-            </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>PU poteau (€/u)</label>
+            <input id="poteau_pu" type="number" min="0" step="0.01" value="0" />
+          </div>
+          <div>
+            <label>Plots béton (nb)</label>
+            <input id="plots_nb" type="number" min="0" step="1" value="0" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>PU plot (€/u)</label>
+            <input id="plot_pu" type="number" min="0" step="0.01" value="0" />
+          </div>
+          <div>
+            <label>Scellement / terrassement (h)</label>
+            <input id="scellement_h" type="number" min="0" step="0.05" value="0" />
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="warn">
+          “Entretoises” et “Structure drapeau” n’ont pas de PU dans ta liste : ils restent à 0 par défaut (modifiables).
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>PU Entretoises (€/u)</label>
+            <input id="entretoise_pu" type="number" min="0" step="0.01" value="0" />
+          </div>
+          <div>
+            <label>PU Structure drapeau (forfait €)</label>
+            <input id="structure_pu" type="number" min="0" step="0.01" value="0" />
           </div>
         </div>
       </div>
 
+      <!-- Réglages atelier / structure -->
       <div class="card" style="padding:12px;">
         <div class="pill">Réglages atelier / structure</div>
-        <div class="stack" style="margin-top:10px;">
-          <div class="row" style="grid-template-columns:1fr 1fr;">
-            <div>
-              <label>Taux atelier (€/h)</label>
-              <input id="rateAtelier" type="number" min="0" step="0.01" value="60" />
-            </div>
-            <div>
-              <label>Majoration &lt; 1 m² (%)</label>
-              <input id="smallAreaMarkupPct" type="number" min="0" step="0.1" value="10" />
-            </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <div>
+            <label>Taux atelier (€/h)</label>
+            <input id="atelier_rate" type="number" min="0" step="0.01" value="60" />
           </div>
-
-          <div class="row" style="grid-template-columns:1fr 1fr;">
-            <div>
-              <label>Frais fixes / structure (% sur directs)</label>
-              <input id="overheadPct" type="number" min="0" step="0.1" value="15" />
-            </div>
-            <div>
-              <label>Frais fixes (forfait €)</label>
-              <input id="overheadFlat" type="number" min="0" step="0.01" value="0" />
-            </div>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="pill">Objectif de vente</div>
-          <div class="row" style="grid-template-columns:1fr 1fr;">
-            <div>
-              <label>Marge (%)</label>
-              <input id="marginPct" type="number" min="0" step="0.1" value="40" />
-              <div class="mini">PV = PR / (1 - marge)</div>
-            </div>
-            <div>
-              <label>Coefficient (optionnel)</label>
-              <input id="coef" type="number" min="0" step="0.01" value="" placeholder="ex : 2.2" />
-              <div class="mini">Si rempli, il prime sur la marge.</div>
-            </div>
-          </div>
-
-          <div class="hr"></div>
-
-          <label>Notes</label>
-          <textarea id="notes" rows="6" placeholder="Contraintes, références matières, etc."></textarea>
-          <div class="muted" style="margin-top:8px;">
-            Astuce : on intégrera ensuite les “compositions produit” plus poussées (LED, alim, rails, etc.).
+          <div>
+            <label>Majoration &lt; 1 m² (%)</label>
+            <input id="small_markup" type="number" min="0" step="0.1" value="10" />
           </div>
         </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>Frais fixes / structure (% sur directs)</label>
+            <input id="overheadPct" type="number" min="0" step="0.1" value="15" />
+          </div>
+          <div>
+            <label>Frais fixes (forfait €)</label>
+            <input id="overheadFlat" type="number" min="0" step="0.01" value="0" />
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="pill">Objectif de vente</div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>Marge (%)</label>
+            <input id="marginPct" type="number" min="0" step="0.1" value="40" />
+          </div>
+          <div>
+            <label>ou Coefficient (optionnel)</label>
+            <input id="coef" type="number" min="0" step="0.01" value="" placeholder="ex : 2.10" />
+          </div>
+        </div>
+        <div class="muted">Si coefficient renseigné, il prime sur la marge.</div>
+
+        <div class="hr"></div>
+
+        <label>Notes</label>
+        <textarea id="notes" rows="6" placeholder="Contraintes, références matières, etc."></textarea>
       </div>
     </div>
 
     <div class="hr"></div>
 
+    <!-- Composition / Sandwich -->
+    <div class="card" style="padding:12px;">
+      <div class="pill">Composition (sandwich)</div>
+      <div id="comp_list" style="font-size:13px; line-height:1.45; margin-top:10px;"></div>
+
+      <div style="display:flex; gap:12px; margin-top:10px; flex-wrap:wrap;">
+        <div class="pillBox">
+          <div style="font-size:12px; opacity:.75;">Sandwich (€/m²)</div>
+          <div id="comp_sandwich_m2" style="font-size:18px; font-weight:700;">0,00 €</div>
+        </div>
+        <div class="pillBox">
+          <div style="font-size:12px; opacity:.75;">Sandwich total (surface)</div>
+          <div id="comp_sandwich_total" style="font-size:18px; font-weight:700;">0,00 €</div>
+        </div>
+        <div class="pillBox">
+          <div style="font-size:12px; opacity:.75;">Surface unitaire</div>
+          <div id="comp_surface_u" style="font-size:18px; font-weight:700;">0,00 m²</div>
+        </div>
+      </div>
+
+      <div class="muted" style="margin-top:8px;">
+        Le “sandwich” additionne uniquement les composants matières au m² (hors atelier, CNC, pose, infographie, déplacement, nacelle…).
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- Lignes calculées -->
     <div class="row head">
-      <div>Composants (catalogue)</div><div>Qté</div><div>PU (€)</div><div>Total</div>
+      <div>Ligne de coût</div><div>Qté</div><div>PU (€)</div><div>Total</div>
     </div>
     <div id="lines"></div>
 
     <div class="btns" style="margin-top:12px;">
-      <button class="primary" id="addLine">+ Ajouter une ligne libre</button>
-      <button class="ghost" id="reset">Réinitialiser</button>
       <button class="ghost" id="save">Enregistrer</button>
       <button class="ghost" id="load">Charger</button>
       <button class="ghost" id="exportCsv">Exporter CSV</button>
+      <button class="primary" id="reset">Réinitialiser</button>
+    </div>
+
+    <div class="muted" style="margin-top:10px;">
+      Astuce : on peut ensuite ajouter “LED”, “Alim”, “Rails”, etc. dans la famille enseigne (bandeau/caisson), mais on verrouille d’abord la logique composition → lignes.
     </div>
   </section>
 
   <!-- COL 2 -->
   <aside class="card">
     <h2 style="margin:0 0 10px 0; font-size:16px;">Résultats</h2>
+
     <div class="totals">
       <div class="kpi">
         <div class="t">Coûts matières & options</div>
@@ -284,9 +312,14 @@
         <div class="s">Somme des lignes</div>
       </div>
       <div class="kpi">
-        <div class="t">Main d’œuvre</div>
-        <div class="v" id="k_labor">0,00 €</div>
-        <div class="s"><span id="k_lh">0</span> h × <span id="k_lr">0</span> €/h</div>
+        <div class="t">Atelier</div>
+        <div class="v" id="k_atelier">0,00 €</div>
+        <div class="s"><span id="k_ah">0</span> h × <span id="k_ar">0</span> €/h</div>
+      </div>
+      <div class="kpi">
+        <div class="t">Pose + options pose</div>
+        <div class="v" id="k_pose">0,00 €</div>
+        <div class="s">HT</div>
       </div>
       <div class="kpi">
         <div class="t">Frais fixes / structure</div>
@@ -301,12 +334,7 @@
       <div class="kpi">
         <div class="t">Prix de vente HT</div>
         <div class="v" id="k_sell_ht">0,00 €</div>
-        <div class="s" id="k_margin_used">marge</div>
-      </div>
-      <div class="kpi">
-        <div class="t">Majoration &lt; 1 m²</div>
-        <div class="v" id="k_markup">0,00 €</div>
-        <div class="s"><span id="k_area">0</span> m² / unité</div>
+        <div class="s"><span id="k_margin_used">marge</span></div>
       </div>
     </div>
 
@@ -315,1032 +343,677 @@
     <h3 style="margin:0 0 10px 0; font-size:14px;">Détail unitaire</h3>
     <table>
       <tbody>
-        <tr><td>Prix de revient / u</td><td class="num" id="u_cost">0,00 €</td></tr>
-        <tr><td>Vente HT / u</td><td class="num" id="u_sell_ht">0,00 €</td></tr>
+        <tr><td>Prix de revient / unité</td><td class="num" id="u_cost">0,00 €</td></tr>
+        <tr><td>Vente HT / unité</td><td class="num" id="u_sell_ht">0,00 €</td></tr>
       </tbody>
     </table>
 
     <div class="hr"></div>
 
-    <div class="muted">
-      <div><span class="tag">HT uniquement</span> <span class="tag">Famille → Produit</span></div>
-      <div style="margin-top:8px;">
-        Prochaine étape : composition “intelligente” par produit (ex : Bandeau caisson = plexi opale + vinyle + LED ml + alim oui/non + cablage…).
-      </div>
+    <div class="ok">
+      Si tu modifies une PU dans les champs options (nacelle, poteau, plot, structure…), le calcul se met à jour immédiatement.
     </div>
   </aside>
 </main>
 
 <script>
-  // =====================
-  // 0) UTILITAIRES
-  // =====================
-  const fmt = (n) => (Number(n || 0)).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
-  const byId = (id) => document.getElementById(id);
+/** =====================
+ *  FORMAT / HELPERS
+ *  ===================== */
+const fmt = (n) => (Number(n || 0)).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+const fmtM2 = (n) => (Number(n || 0)).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' m²';
+const byId = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 
-  function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
+/** =====================
+ *  DONNÉES (PU) — issues de ta liste
+ *  ===================== */
+const PU = {
+  dibond_3_m2: 17.20,
+  vinyl_poly_m2: 3.80,
+  encre_vinyl_m2: 4.00,
+  lam_poly_mat_m2: 3.63,
+  vinyl_dao_3m_m2: 6.13,
+  tape_papier_m2: 1.30,
+  tape_transp_m2: 1.52,
+  atelier_10mn_m2: 5.00,       // “Atelier impression (10mn/m2) : 5”
+  cnc_h: 17.60                 // “Découpe cnc : 17,60”
+};
+
+/** =====================
+ *  RÈGLES
+ *  ===================== */
+const RULES = {
+  smallAreaThreshold_m2: 1.0
+};
+
+/** =====================
+ *  FAMILLES / PRODUITS (ENSEIGNE)
+ *  Organigramme fourni par toi
+ *  ===================== */
+const FAMILIES = {
+  enseigne: {
+    key: "enseigne",
+    label: "Enseigne",
+    products: [
+      { key:"ens_panneau_quadri", label:"Enseigne — panneau QUADRI (dibond + vinyl polymère + encre + lamination)", type:"flat_quadri" },
+      { key:"ens_panneau_dao",    label:"Enseigne — panneau vinyl DAO (dibond + vinyl DAO + tape)", type:"flat_dao" },
+
+      { key:"ens_forme_quadri",   label:"Enseigne — panneau à forme QUADRI (+ découpe CNC)", type:"shape_quadri" },
+      { key:"ens_forme_dao",      label:"Enseigne — panneau à forme vinyl DAO (+ découpe CNC)", type:"shape_dao" },
+
+      { key:"ens_caisson_quadri", label:"Enseigne — bandeau caisson QUADRI (L×H×P) (+ découpe CNC)", type:"box_quadri" },
+      { key:"ens_caisson_dao",    label:"Enseigne — bandeau caisson vinyl DAO (L×H×P) (+ découpe CNC)", type:"box_dao" },
+
+      { key:"ens_lettres",        label:"Enseigne — lettres découpées (dibond + découpe CNC + entretoises)", type:"letters" },
+
+      { key:"ens_drapeau_quadri", label:"Enseigne — drapeau QUADRI (dibond + quadri + lamination + découpe CNC + structure)", type:"flag_quadri" },
+      { key:"ens_drapeau_dao",    label:"Enseigne — drapeau vinyl DAO (dibond + DAO + tape + découpe CNC + structure)", type:"flag_dao" },
+    ]
   }
+};
 
-  // =====================
-  // 1) RÈGLES GLOBALES (modifiables via UI)
-  // =====================
-  const RULES = {
-    smallAreaThreshold_m2: 1.0,
-    smallAreaMarkupPct: 10,
-    rateAtelier: 60,
-    ratePose: 70,
-    rateScellement: 70,
-    rateInfographie: 80,
-  };
+/** =====================
+ *  MODES DE POSE
+ *  ===================== */
+const POSE_MODES = {
+  SANS_POSE: { key:"SANS_POSE", label:"Sans pose" },
+  MUR_ECHELLE: { key:"MUR_ECHELLE", label:"Pose murale (échelle)" },
+  MUR_NACELLE: { key:"MUR_NACELLE", label:"Pose murale (nacelle)" },
+  POTEAUX_PLOTS: { key:"POTEAUX_PLOTS", label:"Poteaux + plots béton" },
+  STRUCTURE_EXISTANTE: { key:"STRUCTURE_EXISTANTE", label:"Sur structure existante" },
+};
 
-  // =====================
-  // 2) CATALOGUE COMPOSANTS (PU issus de ta liste)
-  // =====================
-  // PU : :contentReference[oaicite:1]{index=1}
-  const COMPONENTS = {
-    // --- Supports (m²) ---
-    dibond_3: { key:"dibond_3", label:"Dibond 3mm", unit:"m2", defaultPu:17.20, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    akilux_3: { key:"akilux_3", label:"Akilux 3mm", unit:"m2", defaultPu:3.68, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    akilux_10: { key:"akilux_10", label:"Akilux 10mm", unit:"m2", defaultPu:9.53, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    plexi_transp_3: { key:"plexi_transp_3", label:"Plexi transparent 3mm", unit:"m2", defaultPu:21.99, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    plexi_transp_5: { key:"plexi_transp_5", label:"Plexi transparent 5mm", unit:"m2", defaultPu:35.79, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    plexi_transp_8: { key:"plexi_transp_8", label:"Plexi transparent 8mm", unit:"m2", defaultPu:59.93, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    plexi_transp_10:{ key:"plexi_transp_10",label:"Plexi transparent 10mm",unit:"m2", defaultPu:70.95, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    combi_white_9:{ key:"combi_white_9",label:"Combi white ext. 9mm",unit:"m2", defaultPu:39.67, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    pvc_10: { key:"pvc_10", label:"PVC 10mm", unit:"m2", defaultPu:18.89, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    pvc_19: { key:"pvc_19", label:"PVC 19mm", unit:"m2", defaultPu:35.11, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vison_10:{ key:"vison_10", label:"Vison 10mm", unit:"m2", defaultPu:19.49, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    bois_peuplier_3:{ key:"bois_peuplier_3", label:"Bois (peuplier 3mm)", unit:"m2", defaultPu:8.96, group:"Support", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
+/** =====================
+ *  STATE
+ *  ===================== */
+const defaultState = () => ({
+  familyKey: "enseigne",
+  productKey: "ens_panneau_quadri",
+  productName: "",
+  L: 1,
+  H: 1,
+  P: 0.20,
+  qty: 1,
 
-    // --- Films / Vinyles (m²) ---
-    encre_vinyle:{ key:"encre_vinyle", label:"Encre pour vinyle", unit:"m2", defaultPu:4.00, group:"Impression", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_poly:{ key:"vinyle_poly", label:"Vinyle polymère", unit:"m2", defaultPu:3.80, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_mono:{ key:"vinyle_mono", label:"Vinyle monomère", unit:"m2", defaultPu:1.62, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    lam_polymere_mat:{ key:"lam_polymere_mat", label:"Lamination polymère mat", unit:"m2", defaultPu:3.63, group:"Finition", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_transparent:{ key:"vinyle_transparent", label:"Vinyle transparent", unit:"m2", defaultPu:3.30, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_conformable:{ key:"vinyle_conformable", label:"Vinyle conformable", unit:"m2", defaultPu:15.15, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    lam_conformable:{ key:"lam_conformable", label:"Lamination conformable", unit:"m2", defaultPu:10.14, group:"Finition", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    lam_effacable:{ key:"lam_effacable", label:"Lamination effaçable", unit:"m2", defaultPu:13.84, group:"Finition", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    depoli_imprimable:{ key:"depoli_imprimable", label:"Dépoli imprimable", unit:"m2", defaultPu:7.10, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    bache_450:{ key:"bache_450", label:"Bâche 450g", unit:"m2", defaultPu:2.70, group:"Support souple", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_colle_renf:{ key:"vinyle_colle_renf", label:"Vinyle colle renforcé", unit:"m2", defaultPu:7.23, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vinyle_dao_3m:{ key:"vinyle_dao_3m", label:"Vinyle DAO 3M", unit:"m2", defaultPu:6.13, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    tape_papier:{ key:"tape_papier", label:"Tape papier", unit:"ml", defaultPu:1.30, group:"Consommables", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
-    tape_transparent:{ key:"tape_transparent", label:"Tape transparent", unit:"ml", defaultPu:1.52, group:"Consommables", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
-    vinyle_classe1:{ key:"vinyle_classe1", label:"Vinyle classe 1 (rétro)", unit:"m2", defaultPu:20.04, group:"Films", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
+  // options
+  infog_on: false,
+  infog_h: 0,
+  infog_rate: 80,
 
-    // --- UV (m²) ---
-    encre_uv:{ key:"encre_uv", label:"Encre UV", unit:"m2", defaultPu:2.28, group:"UV", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    primaire:{ key:"primaire", label:"Primaire", unit:"m2", defaultPu:1.73, group:"UV", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    blanc_uv:{ key:"blanc_uv", label:"Blanc de soutien UV", unit:"m2", defaultPu:3.89, group:"UV", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vernis_selectif:{ key:"vernis_selectif", label:"Vernis sélectif UV", unit:"m2", defaultPu:9.77, group:"UV", smallAreaEligible:true, qtyFormula: ({surfaceTot}) => surfaceTot },
-    vernis_pu_bombe:{ key:"vernis_pu_bombe", label:"Vernis PU en bombe", unit:"u", defaultPu:21.20, group:"Finition", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
+  poseMode: "SANS_POSE",
+  pose_h: 0,
+  pose_rate: 70,
+  deplacement_forfait: 0,
+  nacelle_j: 0,
+  nacelle_pu: 0,
+  poteaux_nb: 0,
+  poteau_pu: 0,
+  plots_nb: 0,
+  plot_pu: 0,
+  scellement_h: 0,
 
-    // --- Rails / Poteaux / Brides ---
-    rail_alu_encolle:{ key:"rail_alu_encolle", label:"Rail alu encollé", unit:"ml", defaultPu:10.55, group:"Quincaillerie", smallAreaEligible:false, qtyFormula: ({L,qty}) => 0 },
-    rail_alu_brut_2500:{ key:"rail_alu_brut_2500", label:"Rail alu brut 2500mm", unit:"u", defaultPu:15.65, group:"Quincaillerie", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
-    bride_80x40:{ key:"bride_80x40", label:"Bride 80x40", unit:"u", defaultPu:2.92, group:"Quincaillerie", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
-    bride_80x8:{ key:"bride_80x8", label:"Bride 80x8", unit:"u", defaultPu:3.02, group:"Quincaillerie", smallAreaEligible:false, qtyFormula: ({qty}) => 0 },
-    poteau_pin_90x90_2400:{ key:"poteau_pin_90x90_2400", label:"Poteau pin cl4 90x90x2400", unit:"u", defaultPu:14.55, group:"Pose", smallAreaEligible:false, qtyFormula: ({user}) => Number(user.poteaux_nb||0) },
-    poteau_pin_70x70_2400:{ key:"poteau_pin_70x70_2400", label:"Poteau pin cl4 70x70x2400", unit:"u", defaultPu:8.37, group:"Pose", smallAreaEligible:false, qtyFormula: ({user}) => Number(user.poteaux_nb||0) },
-    poteau_80x40_ml:{ key:"poteau_80x40_ml", label:"Poteau 80x40", unit:"ml", defaultPu:9.16, group:"Pose", smallAreaEligible:false, qtyFormula: ({user}) => 0 },
-    poteau_d60_ml:{ key:"poteau_d60_ml", label:"Poteau Ø60", unit:"ml", defaultPu:10.55, group:"Pose", smallAreaEligible:false, qtyFormula: ({user}) => 0 },
-    poteau_80x80_ml:{ key:"poteau_80x80_ml", label:"Poteau 80x80", unit:"ml", defaultPu:14.31, group:"Pose", smallAreaEligible:false, qtyFormula: ({user}) => 0 },
+  entretoise_pu: 0,
+  structure_pu: 0,
 
-    // --- Forfaits / atelier ---
-    forfait_coupe_atelier:{ key:"forfait_coupe_atelier", label:"Forfait coupe atelier", unit:"forfait", defaultPu:5.00, group:"Atelier", smallAreaEligible:false, qtyFormula: () => 1 },
-    atelier_10mn_m2:{ key:"atelier_10mn_m2", label:"Atelier impression (10mn/m²)", unit:"m2", defaultPu:5.00, group:"Atelier", smallAreaEligible:false, qtyFormula: ({surfaceTot}) => 0 },
+  // atelier/structure
+  atelier_rate: 60,
+  cncHperM2: 0.20,
+  small_markup_pct: 10,
+  overheadPct: 15,
+  overheadFlat: 0,
 
-    // --- Temps atelier / pose / infographie (calculés) ---
-    atelier_temps:{ key:"atelier_temps", label:"Temps atelier", unit:"h",
-      defaultPu: () => RULES.rateAtelier, group:"Main d’œuvre", smallAreaEligible:false,
-      qtyFormula: ({surfaceTot, product}) => surfaceTot * (product.atelier_h_per_m2 || 0)
-    },
-    pose_h:{ key:"pose_h", label:"Pose", unit:"h",
-      defaultPu: () => RULES.ratePose, group:"Pose", smallAreaEligible:false,
-      qtyFormula: ({user}) => Number(user.pose_h || 0)
-    },
-    scellement_h:{ key:"scellement_h", label:"Scellement / terrassement", unit:"h",
-      defaultPu: () => RULES.rateScellement, group:"Pose", smallAreaEligible:false,
-      qtyFormula: ({user}) => Number(user.scellement_h || 0)
-    },
-    deplacement_forfait:{ key:"deplacement_forfait", label:"Déplacement", unit:"forfait",
-      defaultPu: ({user}) => Number(user.deplacement_pu||0), group:"Pose", smallAreaEligible:false,
-      qtyFormula: ({user}) => (user.deplacement_on ? 1 : 0)
-    },
-    nacelle_j:{ key:"nacelle_j", label:"Nacelle", unit:"jour",
-      defaultPu: ({user}) => Number(user.nacelle_pu||0), group:"Pose", smallAreaEligible:false,
-      qtyFormula: ({user}) => Number(user.nacelle_j || 0)
-    },
-    infographie_h:{ key:"infographie_h", label:"Infographie", unit:"h",
-      defaultPu: () => RULES.rateInfographie, group:"Infographie", smallAreaEligible:false,
-      qtyFormula: ({user}) => (user.infographie_on ? Number(user.infographie_h||0) : 0)
-    },
-    // --- Ligne libre (hors catalogue) ---
-    custom_line:{ key:"custom_line", label:"Ligne libre", unit:"lot", defaultPu:0, group:"Libre", smallAreaEligible:false,
-      qtyFormula: ({user}) => 0
-    }
-  };
-  const SANDWICH_GROUPS = ["Matière"]; 
-// Si tes composants matières n'ont pas group:"Matière", adapte ici.
-// Exemple possible: ["Matière","Support","Vinyle","Encre","Lamination"]
+  // vente
+  marginPct: 40,
+  coef: "",
+  notes: "",
 
+  // calcul
+  lines: []
+});
 
-  // =====================
-  // 3) MODES DE POSE (déclenchent des composants)
-  // =====================
-  const POSE_MODES = {
-    SANS_POSE:{ key:"SANS_POSE", label:"Sans pose", components: [] },
-    MUR_ECHELLE:{ key:"MUR_ECHELLE", label:"Pose murale (échelle)", components:["pose_h","deplacement_forfait"] },
-    MUR_NACELLE:{ key:"MUR_NACELLE", label:"Pose murale (nacelle)", components:["pose_h","deplacement_forfait","nacelle_j"] },
-    POTEAUX_PLOTS:{ key:"POTEAUX_PLOTS", label:"Poteaux + plots béton", components:["pose_h","deplacement_forfait","scellement_h"] },
-    STRUCTURE_EXISTANTE:{ key:"STRUCTURE_EXISTANTE", label:"Sur structure existante", components:["pose_h","deplacement_forfait"] },
-    INTERIEUR:{ key:"INTERIEUR", label:"Pose intérieure", components:["pose_h","deplacement_forfait"] },
-  };
+let state = defaultState();
 
-  // =====================
-  // 4) PRODUITS (organigramme : Famille → Produit)
-  // =====================
-  // Pour l’instant : structure claire + pré-coches “raisonnables”.
-  // La composition fine (LED, alim, rails, etc.) on l’ajuste ensuite.
-  const PRODUCTS = {
-    // Panneaux
-    panneau_dibond_std:{
-      key:"panneau_dibond_std",
-      family:"Panneau",
-      label:"Panneau Dibond — standard",
-      atelier_h_per_m2: 0.25,
-      components:[
-        {key:"dibond_3", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"lam_polymere_mat", defaultOn:false},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","POTEAUX_PLOTS","STRUCTURE_EXISTANTE"]
-    },
-
-    // Vitrophanie
-    vitrophanie_poly:{
-      key:"vitrophanie_poly",
-      family:"Vitrophanie",
-      label:"Vitrophanie — vinyle polymère imprimé",
-      atelier_h_per_m2: 0.25,
-      components:[
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"lam_polymere_mat", defaultOn:false},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","INTERIEUR","MUR_ECHELLE","MUR_NACELLE"]
-    },
-
-    // Enseigne (base)
-    enseigne_panneau:{
-      key:"enseigne_panneau",
-      family:"Enseigne",
-      label:"Enseigne — panneau (simple)",
-      atelier_h_per_m2: 0.35,
-      components:[
-        {key:"dibond_3", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"lam_polymere_mat", defaultOn:false},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","STRUCTURE_EXISTANTE","POTEAUX_PLOTS"]
-    },
-
-    enseigne_bandeau_caisson:{
-      key:"enseigne_bandeau_caisson",
-      family:"Enseigne",
-      label:"Enseigne — bandeau caisson (base)",
-      atelier_h_per_m2: 0.50,
-      components:[
-        // on met une base “support + film + atelier”, la partie LED/alims on fera ensuite
-        {key:"plexi_transp_5", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
-    },
-
-    enseigne_lettres:{
-      key:"enseigne_lettres",
-      family:"Enseigne",
-      label:"Enseigne — lettres découpées (base)",
-      atelier_h_per_m2: 0.75,
-      components:[
-        {key:"pvc_10", defaultOn:true},
-        // la découpe machine (CNC/laser) on l’ajoute ensuite en “temps machine” si tu veux
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
-    },
-
-    enseigne_drapeau:{
-      key:"enseigne_drapeau",
-      family:"Enseigne",
-      label:"Enseigne — drapeau (base)",
-      atelier_h_per_m2: 0.60,
-      components:[
-        {key:"dibond_3", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE"]
-    },
-
-    // Impression UV
-    impression_uv_directe:{
-      key:"impression_uv_directe",
-      family:"Impression UV",
-      label:"Impression UV — directe sur support (base)",
-      atelier_h_per_m2: 0.25,
-      components:[
-        {key:"dibond_3", defaultOn:true},
-        {key:"encre_uv", defaultOn:true},
-        {key:"blanc_uv", defaultOn:false},
-        {key:"primaire", defaultOn:false},
-        {key:"vernis_selectif", defaultOn:false},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","STRUCTURE_EXISTANTE"]
-    },
-
-    // Signalétique (générique)
-    signaletique_base:{
-      key:"signaletique_base",
-      family:"Signalétique",
-      label:"Signalétique — base (panneau + impression)",
-      atelier_h_per_m2: 0.30,
-      components:[
-        {key:"dibond_3", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"lam_polymere_mat", defaultOn:false},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","POTEAUX_PLOTS","STRUCTURE_EXISTANTE","INTERIEUR"]
-    },
-
-    // Plaques pro (base)
-    plaque_pro_plexi:{
-      key:"plaque_pro_plexi",
-      family:"Plaque pro",
-      label:"Plaque pro — plexi (base)",
-      atelier_h_per_m2: 0.25,
-      components:[
-        {key:"plexi_transp_3", defaultOn:true},
-        {key:"vinyle_poly", defaultOn:true},
-        {key:"encre_vinyle", defaultOn:true},
-        {key:"atelier_temps", defaultOn:true},
-        {key:"infographie_h", defaultOn:false},
-      ],
-      poseModes:["SANS_POSE","MUR_ECHELLE","MUR_NACELLE","INTERIEUR"]
-    },
-  };
-
-  const FAMILIES = [
-    "Enseigne",
-    "Panneau",
-    "Vitrophanie",
-    "Plaque pro",
-    "Impression UV",
-    "Signalétique"
-  ];
-
-  // =====================
-  // 5) ÉTAT + LIGNES (catalogue + lignes libres)
-  // =====================
-  const defaultFreeLine = () => ({
-    id: crypto.randomUUID(),
-    mode:"free", // free | comp
-    compKey:"",
-    label:"Ligne libre",
-    qty:1,
-    pu:0,
-    smallAreaEligible:false,
-    group:"Libre",
-    checked:true
+/** =====================
+ *  UI BIND
+ *  ===================== */
+function fillFamilySelect(){
+  const sel = byId("family");
+  sel.innerHTML = "";
+  Object.values(FAMILIES).forEach(f=>{
+    const opt = document.createElement("option");
+    opt.value = f.key;
+    opt.textContent = f.label;
+    sel.appendChild(opt);
   });
-
-  let state = {
-    family:"",
-    productKey:"",
-    productName:"",
-    L:1.2,
-    H:0.8,
-    qty:1,
-
-    // composants (définis depuis le produit)
-    compSelections: [], // [{compKey, checked}]
-    freeLines: [],
-
-    // options / user inputs
-    poseMode:"SANS_POSE",
-    pose_h:0,
-    deplacement_on:false,
-    deplacement_pu:0,
-    nacelle_j:0,
-    nacelle_pu:0,
-    poteaux_nb:0,
-    poteaux_pu:0,
-    plots_nb:0,
-    plots_pu:0,
-    scellement_h:0,
-
-    infographie_on:false,
-    infographie_h:0,
-
-    // frais
-    overheadPct:15,
-    overheadFlat:0,
-
-    // vente
-    marginPct:40,
-    coef:"",
-
-    notes:""
-  };
-
-  // =====================
-  // 6) MOTEUR DE CALCUL (HT)
-  // =====================
-  function calcQuote() {
-    const product = PRODUCTS[state.productKey] || null;
-
-    const L = Number(state.L||0);
-    const H = Number(state.H||0);
-    const qty = Number(state.qty||0);
-
-    const surfaceUnit = L * H;     // m² / unité
-    const surfaceTot  = surfaceUnit * qty;
-
-    // user inputs pour formules
-    const user = {
-      pose_h: Number(state.pose_h||0),
-      deplacement_on: !!state.deplacement_on,
-      deplacement_pu: Number(state.deplacement_pu||0),
-      nacelle_j: Number(state.nacelle_j||0),
-      nacelle_pu: Number(state.nacelle_pu||0),
-      poteaux_nb: Number(state.poteaux_nb||0),
-      poteaux_pu: Number(state.poteaux_pu||0),
-      plots_nb: Number(state.plots_nb||0),
-      plots_pu: Number(state.plots_pu||0),
-      scellement_h: Number(state.scellement_h||0),
-      infographie_on: !!state.infographie_on,
-      infographie_h: Number(state.infographie_h||0),
-    };
-
-    // Règles via UI
-    RULES.smallAreaMarkupPct = Number(byId("smallAreaMarkupPct").value||0);
-    RULES.rateAtelier = Number(byId("rateAtelier").value||0);
-    RULES.ratePose = Number(byId("ratePose").value||0);
-    RULES.rateScellement = Number(byId("rateScellement").value||0);
-    RULES.rateInfographie = Number(byId("rateInfographie").value||0);
-
-    const lines = [];
-
-    // (A) composants cochés
-    for (const sel of state.compSelections) {
-      if (!sel.checked) continue;
-      const def = COMPONENTS[sel.compKey];
-      if (!def) continue;
-
-      const pu = (typeof def.defaultPu === "function")
-        ? def.defaultPu({user})
-        : (typeof def.defaultPu === "object" ? def.defaultPu(user) : def.defaultPu);
-
-      const qtyLine = def.qtyFormula({L,H,qty,surfaceTot, product: (product||{}), user});
-
-      if (!qtyLine || qtyLine === 0) continue;
-
-      lines.push({
-        key:def.key,
-        label:def.label,
-        unit:def.unit,
-        qty:Number(qtyLine),
-        pu:Number(pu||0),
-        group:def.group,
-        smallAreaEligible: !!def.smallAreaEligible
-      });
-    }
-
-    // (B) mode de pose (ajoute des composants “automatiques”)
-    const poseMode = POSE_MODES[state.poseMode] || POSE_MODES.SANS_POSE;
-    for (const cKey of poseMode.components) {
-      const already = lines.some(l => l.key === cKey);
-      if (already) continue;
-
-      // Cas poteaux/plots : on ajoute en “lignes libres” pour l’instant,
-      // car le choix du type de poteau (70/90/ml etc.) sera défini ensuite.
-      if (cKey === "poteaux_nb") continue;
-      if (cKey === "plots_nb") continue;
-
-      const def = COMPONENTS[cKey];
-      if (!def) continue;
-
-      const pu = (typeof def.defaultPu === "function")
-        ? def.defaultPu({user})
-        : (typeof def.defaultPu === "object" ? def.defaultPu(user) : def.defaultPu);
-
-      const qtyLine = def.qtyFormula({L,H,qty,surfaceTot, product: (product||{}), user});
-      if (!qtyLine || qtyLine === 0) continue;
-
-      lines.push({
-        key:def.key,
-        label:def.label,
-        unit:def.unit,
-        qty:Number(qtyLine),
-        pu:Number(pu||0),
-        group:def.group,
-        smallAreaEligible: !!def.smallAreaEligible
-      });
-    }
-
-    // (C) lignes libres
-    for (const fl of state.freeLines) {
-      if (!fl.checked) continue;
-      const q = Number(fl.qty||0);
-      const p = Number(fl.pu||0);
-      if (!q || q === 0) continue;
-      lines.push({
-        key: "free_"+fl.id,
-        label: fl.label || "Ligne libre",
-        unit: "lot",
-        qty: q,
-        pu: p,
-        group: "Libre",
-        smallAreaEligible: false
-      });
-    }
-
-    // Totaux lignes
-    for (const ln of lines) ln.total = ln.qty * ln.pu;
-
-    // Majoration < 1m² (sur lignes éligibles)
-    let markup = 0;
-    if (surfaceUnit > 0 && surfaceUnit < RULES.smallAreaThreshold_m2 && RULES.smallAreaMarkupPct > 0) {
-      const rate = RULES.smallAreaMarkupPct / 100;
-      for (const ln of lines) {
-        if (ln.smallAreaEligible) {
-          const extra = ln.total * rate;
-          ln.total += extra;
-          markup += extra;
-        }
-      }
-    }
-
-    const mat = lines.reduce((s,l)=> s + l.total, 0);
-    // Ici, “Main d’œuvre” est déjà dans les lignes (atelier_temps, pose_h, infographie_h, scellement_h)
-    // mais on la re-sépare pour lisibilité :
-    const labor = lines
-      .filter(l => ["Main d’œuvre","Pose","Infographie"].includes(l.group))
-      .reduce((s,l)=> s + l.total, 0);
-
-    const direct = mat; // mat inclut tout (matière + MO), on garde cette convention simple
-    const ovh = direct * (Number(state.overheadPct||0)/100) + Number(state.overheadFlat||0);
-    const cost = direct + ovh;
-
-    const coef = Number(state.coef || 0);
-    const useCoef = coef > 0;
-    const marginPct = Number(state.marginPct||0)/100;
-    const sellHT = useCoef ? (cost * coef) : (marginPct < 1 ? cost / (1 - marginPct) : cost);
-
-    const uCost = (Number(state.qty||1) > 0) ? (cost / Number(state.qty||1)) : 0;
-    const uSellHT = (Number(state.qty||1) > 0) ? (sellHT / Number(state.qty||1)) : 0;
-
-    return { lines, surfaceUnit, surfaceTot, markup, mat, labor, ovh, cost, sellHT, uCost, uSellHT, useCoef, coef };
-  }
-
-  // =====================
-  // 7) RENDER UI LIGNES (catalogue + lignes libres)
-  // =====================
-  function renderLines(){
-    const container = byId("lines");
-    container.innerHTML = "";
-
-    // (A) composants (catalogue) : checkbox + qty calculée + PU modifiable
-    for (let i=0; i<state.compSelections.length; i++){
-      const sel = state.compSelections[i];
-      const def = COMPONENTS[sel.compKey];
-      if (!def) continue;
-
-      const row = document.createElement("div");
-      row.className = "row";
-      row.style.gridTemplateColumns = "1.2fr .8fr .8fr .6fr";
-
-      row.innerHTML = `
-        <div>
-          <div class="chk">
-            <input type="checkbox" data-kind="comp" data-i="${i}" ${sel.checked ? "checked":""} />
-            <div>
-              <div style="font-weight:600;">${escapeHtml(def.label)}</div>
-              <div class="mini">${escapeHtml(def.group)} • ${escapeHtml(def.unit)}</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label>Qté (auto)</label>
-          <input value="—" disabled />
-        </div>
-        <div>
-          <label>PU (€)</label>
-          <input data-kind="pu" data-i="${i}" type="number" min="0" step="0.01" value="${Number(def.defaultPu?.({user:{}}) || def.defaultPu || 0)}" />
-        </div>
-        <div>
-          <label>Total</label>
-          <input value="—" disabled />
-        </div>
-      `;
-
-      container.appendChild(row);
-    }
-
-    // (B) lignes libres
-    if (state.freeLines.length){
-      const sep = document.createElement("div");
-      sep.className = "hr";
-      container.appendChild(sep);
-    }
-
-    state.freeLines.forEach((ln, i) => {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.style.gridTemplateColumns = "1.2fr .8fr .8fr .6fr";
-      row.innerHTML = `
-        <div>
-          <div class="chk">
-            <input type="checkbox" data-kind="free_chk" data-i="${i}" ${ln.checked ? "checked":""} />
-            <div style="width:100%;">
-              <label>Libellé (libre)</label>
-              <input data-kind="free_label" data-i="${i}" value="${escapeHtml(ln.label)}" />
-              <div class="btns" style="margin-top:6px;">
-                <button class="ghost" type="button" data-kind="free_dup" data-i="${i}">Dupliquer</button>
-                <button class="ghost" type="button" data-kind="free_del" data-i="${i}">Supprimer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label>Qté</label>
-          <input data-kind="free_qty" data-i="${i}" type="number" min="0" step="0.01" value="${ln.qty}" />
-        </div>
-        <div>
-          <label>PU (€)</label>
-          <input data-kind="free_pu" data-i="${i}" type="number" min="0" step="0.01" value="${ln.pu}" />
-        </div>
-        <div>
-          <label>Total</label>
-          <input value="${fmt(Number(ln.qty||0) * Number(ln.pu||0))}" disabled />
-        </div>
-      `;
-      container.appendChild(row);
-    });
-
-    // Listeners
-    container.querySelectorAll('input[data-kind="comp"]').forEach(inp=>{
-      inp.addEventListener("change", (e)=>{
-        const i = Number(e.target.dataset.i);
-        state.compSelections[i].checked = !!e.target.checked;
-        recalc();
-      });
-    });
-
-    container.querySelectorAll('input[data-kind="pu"]').forEach(inp=>{
-      inp.addEventListener("input", (e)=>{
-        const i = Number(e.target.dataset.i);
-        const sel = state.compSelections[i];
-        const def = COMPONENTS[sel.compKey];
-        // On écrase le defaultPu en “valeur fixe” (modif rapide)
-        def.defaultPu = Number(e.target.value||0);
-        recalc();
-      });
-    });
-
-    container.querySelectorAll('input[data-kind^="free_"], button[data-kind^="free_"]').forEach(el=>{
-      el.addEventListener("click", (e)=>{
-        const k = e.target.dataset.kind;
-        const i = Number(e.target.dataset.i);
-        if (k === "free_del") { state.freeLines.splice(i,1); renderLines(); recalc(); }
-        if (k === "free_dup") { state.freeLines.splice(i+1,0,{...state.freeLines[i], id:crypto.randomUUID()}); renderLines(); recalc(); }
-      });
-      el.addEventListener("input", (e)=>{
-        const k = e.target.dataset.kind;
-        const i = Number(e.target.dataset.i);
-        if (k === "free_label") state.freeLines[i].label = e.target.value;
-        if (k === "free_qty") state.freeLines[i].qty = Number(e.target.value||0);
-        if (k === "free_pu") state.freeLines[i].pu = Number(e.target.value||0);
-        recalc();
-        renderLines();
-      });
-      el.addEventListener("change", (e)=>{
-        const k = e.target.dataset.kind;
-        const i = Number(e.target.dataset.i);
-        if (k === "free_chk") state.freeLines[i].checked = !!e.target.checked;
-        recalc();
-      });
-    });
-  }
-  function euro(v){
-  return (v||0).toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  sel.value = state.familyKey;
 }
 
-// Renvoie un objet: {items:[{label, pu, unit}], sandwich_m2}
-function getSandwichForProduct(productKey){
-  const p = PRODUCTS[productKey];
-  if(!p) return {items:[], sandwich_m2:0};
+function fillProductSelect(){
+  const fam = FAMILIES[state.familyKey];
+  const sel = byId("preset");
+  sel.innerHTML = "";
+  fam.products.forEach(p=>{
+    const opt = document.createElement("option");
+    opt.value = p.key;
+    opt.textContent = p.label;
+    sel.appendChild(opt);
+  });
+  sel.value = state.productKey;
+}
 
-  // Lignes actuellement actives (après chargement produit) : on s’appuie sur state.lines
-  // On prend uniquement celles "matières" au m² (ou group matière) et qui sont "par m²"
-  const items = [];
-  let sandwich_m2 = 0;
+function fillPoseModes(){
+  const sel = byId("poseMode");
+  sel.innerHTML = "";
+  Object.values(POSE_MODES).forEach(m=>{
+    const opt = document.createElement("option");
+    opt.value = m.key;
+    opt.textContent = m.label;
+    sel.appendChild(opt);
+  });
+  sel.value = state.poseMode;
+}
 
-  for(const ln of (state.lines || [])){
-    // On exclut la MO / pose / infographie / options forfait etc.
-    if(!SANDWICH_GROUPS.includes(ln.group)) continue;
+function bindInputs(){
+  const map = [
+    ["productName","productName","text"],
+    ["L","L","num"],["H","H","num"],["P","P","num"],["qty","qty","num"],
+    ["cncHperM2","cncHperM2","num"],
+    ["infog_h","infog_h","num"],["infog_rate","infog_rate","num"],
+    ["pose_h","pose_h","num"],["pose_rate","pose_rate","num"],
+    ["depl_forfait","deplacement_forfait","num"],
+    ["nacelle_j","nacelle_j","num"],["nacelle_pu","nacelle_pu","num"],
+    ["poteaux_nb","poteaux_nb","num"],["poteau_pu","poteau_pu","num"],
+    ["plots_nb","plots_nb","num"],["plot_pu","plot_pu","num"],
+    ["scellement_h","scellement_h","num"],
+    ["entretoise_pu","entretoise_pu","num"],
+    ["structure_pu","structure_pu","num"],
+    ["atelier_rate","atelier_rate","num"],
+    ["small_markup","small_markup_pct","num"],
+    ["overheadPct","overheadPct","num"],["overheadFlat","overheadFlat","num"],
+    ["marginPct","marginPct","num"],["coef","coef","text"],
+    ["notes","notes","text"],
+  ];
 
-    // On ne garde que celles au m² (unit m2 ou perM2 true selon ton modèle)
-    const isM2 = (ln.unit === "m2") || (ln.per === "m2") || (ln.perM2 === true);
-    if(!isM2) continue;
+  map.forEach(([id,k,typ])=>{
+    const el = byId(id);
+    if(!el) return;
+    const setVal = ()=>{
+      if(typ==="num") state[k]=Number(el.value||0);
+      else state[k]=el.value;
+      recalc();
+    };
+    el.addEventListener("input", setVal);
+  });
 
-    // Le PU doit être le PU "au m²"
-    const pu = Number(ln.pu || 0);
-    sandwich_m2 += pu;
+  byId("infog_on").addEventListener("change", (e)=>{
+    state.infog_on = !!e.target.checked;
+    recalc();
+  });
 
-    items.push({
-      label: ln.label || ln.name || ln.key,
-      pu,
-      unit: "€/m²"
-    });
+  byId("family").addEventListener("change", (e)=>{
+    state.familyKey = e.target.value;
+    // pick first product of family
+    const fam = FAMILIES[state.familyKey];
+    state.productKey = fam.products[0].key;
+    fillProductSelect();
+    syncProductNameDefault();
+    recalc();
+  });
+
+  byId("preset").addEventListener("change", (e)=>{
+    state.productKey = e.target.value;
+    syncProductNameDefault();
+    recalc();
+  });
+
+  byId("poseMode").addEventListener("change", (e)=>{
+    state.poseMode = e.target.value;
+    recalc();
+  });
+}
+
+function syncProductNameDefault(){
+  const fam = FAMILIES[state.familyKey];
+  const p = fam.products.find(x=>x.key===state.productKey);
+  if(!state.productName) {
+    state.productName = p ? p.label.split("(")[0].trim() : "";
+    byId("productName").value = state.productName;
+  }
+}
+
+/** =====================
+ *  COMPOSITION / LIGNES
+ *  ===================== */
+function surfaceUnit(){
+  const L = Number(state.L||0);
+  const H = Number(state.H||0);
+  return L*H;
+}
+function surfaceTot(){
+  return surfaceUnit() * Number(state.qty||0);
+}
+
+// surface développée d'un bandeau caisson : face + retours
+function surfaceBoxDevelopedPerUnit(){
+  const L = Number(state.L||0);
+  const H = Number(state.H||0);
+  const P = Number(state.P||0);
+  const face = L*H;
+  const retours = 2*(L*P) + 2*(H*P);
+  return face + retours;
+}
+
+/**
+ * Retourne un objet "composition" (matières) selon le type produit.
+ * (On sépare matières au m² des opérations au temps / forfait)
+ */
+function getProductDef(){
+  const fam = FAMILIES[state.familyKey];
+  return fam.products.find(p=>p.key===state.productKey);
+}
+
+function buildLines(){
+  const p = getProductDef();
+  const qty = Number(state.qty||0);
+  const sU = surfaceUnit();
+  const sT = surfaceTot();
+
+  const lines = [];
+
+  // --- matières m²
+  function addMat(label, q, pu){
+    if(!q || q===0) return;
+    lines.push({label, qty:q, pu, group:"MAT"});
   }
 
-  return {items, sandwich_m2};
+  // --- opérations (atelier/CNC/forfait)
+  function addOp(label, q, pu, group){
+    if(!q || q===0) return;
+    lines.push({label, qty:q, pu, group:group||"OP"});
+  }
+
+  // Règle majoration <1m² : uniquement sur matières au m²
+  const markupRate = (sU < RULES.smallAreaThreshold_m2) ? (Number(state.small_markup_pct||0)/100) : 0;
+
+  // Helper : applique majoration sur une ligne MAT
+  function applyMarkupOnLastMat(){
+    if(markupRate<=0) return;
+    const last = lines[lines.length-1];
+    if(!last || last.group!=="MAT") return;
+    last.pu = last.pu * (1 + markupRate);
+  }
+
+  // ===== Composition par type (organigramme)
+  switch(p.type){
+    case "flat_quadri":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl polymère", sT, PU.vinyl_poly_m2); applyMarkupOnLastMat();
+      addMat("Encre pour vinyl", sT, PU.encre_vinyl_m2); applyMarkupOnLastMat();
+      addMat("Lamination polymère mat", sT, PU.lam_poly_mat_m2); applyMarkupOnLastMat();
+      break;
+
+    case "flat_dao":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl DAO 3M", sT, PU.vinyl_dao_3m_m2); applyMarkupOnLastMat();
+      addMat("Tape papier", sT, PU.tape_papier_m2); applyMarkupOnLastMat();
+      break;
+
+    case "shape_quadri":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl polymère", sT, PU.vinyl_poly_m2); applyMarkupOnLastMat();
+      addMat("Encre pour vinyl", sT, PU.encre_vinyl_m2); applyMarkupOnLastMat();
+      addMat("Lamination polymère mat", sT, PU.lam_poly_mat_m2); applyMarkupOnLastMat();
+      // CNC en heures
+      addOp("Découpe CNC", sU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      break;
+
+    case "shape_dao":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl DAO 3M", sT, PU.vinyl_dao_3m_m2); applyMarkupOnLastMat();
+      addMat("Tape papier", sT, PU.tape_papier_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", sU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      break;
+
+    case "box_quadri": {
+      const devU = surfaceBoxDevelopedPerUnit();
+      const devT = devU * qty;
+      addMat("Dibond (face + retours)", devT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl polymère", (sU*qty), PU.vinyl_poly_m2); applyMarkupOnLastMat(); // habillage face
+      addMat("Encre pour vinyl", (sU*qty), PU.encre_vinyl_m2); applyMarkupOnLastMat();
+      addMat("Lamination polymère mat", (sU*qty), PU.lam_poly_mat_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", devU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      break;
+    }
+
+    case "box_dao": {
+      const devU = surfaceBoxDevelopedPerUnit();
+      const devT = devU * qty;
+      addMat("Dibond (face + retours)", devT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl DAO 3M", (sU*qty), PU.vinyl_dao_3m_m2); applyMarkupOnLastMat();
+      addMat("Tape papier", (sU*qty), PU.tape_papier_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", devU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      break;
+    }
+
+    case "letters":
+      // Lettres : on reste simple : base = surface (à affiner plus tard par gabarit réel)
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", sU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      addOp("Entretoises", qty, Number(state.entretoise_pu||0), "FORFAIT");
+      break;
+
+    case "flag_quadri":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl polymère", sT, PU.vinyl_poly_m2); applyMarkupOnLastMat();
+      addMat("Encre pour vinyl", sT, PU.encre_vinyl_m2); applyMarkupOnLastMat();
+      addMat("Lamination polymère mat", sT, PU.lam_poly_mat_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", sU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      addOp("Structure drapeau (forfait)", 1, Number(state.structure_pu||0), "FORFAIT");
+      break;
+
+    case "flag_dao":
+      addMat("Dibond 3 mm", sT, PU.dibond_3_m2); applyMarkupOnLastMat();
+      addMat("Vinyl DAO 3M", sT, PU.vinyl_dao_3m_m2); applyMarkupOnLastMat();
+      addMat("Tape papier", sT, PU.tape_papier_m2); applyMarkupOnLastMat();
+      addOp("Découpe CNC", sU * qty * Number(state.cncHperM2||0), PU.cnc_h, "CNC");
+      addOp("Structure drapeau (forfait)", 1, Number(state.structure_pu||0), "FORFAIT");
+      break;
+
+    default:
+      break;
+  }
+
+  // Atelier (temps) : on l’exprime en heures via un “atelier_h_per_m2” interne simple.
+  // Pour l’instant, on prend la base “10mn/m²” => 0.1667 h/m².
+  // Si tu veux par produit (0.25h/m² etc.), on le mettra ensuite.
+  const atelier_h = (sU * qty) * (10/60);
+  addOp("Atelier (temps)", atelier_h, Number(state.atelier_rate||0), "ATELIER");
+
+  // Infographie si activée
+  if(state.infog_on){
+    addOp("Infographie", Number(state.infog_h||0), Number(state.infog_rate||0), "INFO");
+  }
+
+  // Pose
+  let poseTotal = 0;
+  if(state.poseMode !== "SANS_POSE"){
+    addOp("Pose", Number(state.pose_h||0), Number(state.pose_rate||0), "POSE");
+    addOp("Déplacement (forfait)", 1, Number(state.deplacement_forfait||0), "POSE");
+    if(state.poseMode === "MUR_NACELLE"){
+      addOp("Nacelle", Number(state.nacelle_j||0), Number(state.nacelle_pu||0), "POSE");
+    }
+    if(state.poseMode === "POTEAUX_PLOTS"){
+      addOp("Poteaux", Number(state.poteaux_nb||0), Number(state.poteau_pu||0), "POSE");
+      addOp("Plots béton", Number(state.plots_nb||0), Number(state.plot_pu||0), "POSE");
+      addOp("Scellement / terrassement", Number(state.scellement_h||0), Number(state.pose_rate||0), "POSE");
+    }
+  }
+
+  // Totaux ligne
+  lines.forEach(ln => ln.total = Number(ln.qty||0) * Number(ln.pu||0));
+  return lines;
+}
+
+/** =====================
+ *  RENDER LINES + COMPOSITION
+ *  ===================== */
+function renderLines(){
+  const container = byId("lines");
+  container.innerHTML = "";
+  state.lines.forEach((ln)=>{
+    const row = document.createElement("div");
+    row.className = "row4";
+    row.innerHTML = `
+      <div><input value="${esc(ln.label)}" disabled /></div>
+      <div><input value="${(Number(ln.qty||0)).toLocaleString('fr-FR',{maximumFractionDigits:4})}" disabled /></div>
+      <div><input value="${(Number(ln.pu||0)).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}" disabled /></div>
+      <div><input value="${fmt(ln.total)}" disabled /></div>
+    `;
+    container.appendChild(row);
+  });
 }
 
 function renderComposition(){
-  const productKey = state.productKey;
-  const listEl = document.getElementById("comp_list");
-  const m2El   = document.getElementById("comp_sandwich_m2");
-  const totEl  = document.getElementById("comp_sandwich_total");
-  if(!listEl || !m2El || !totEl) return;
+  const listEl = byId("comp_list");
+  const m2El   = byId("comp_sandwich_m2");
+  const totEl  = byId("comp_sandwich_total");
+  const suEl   = byId("comp_surface_u");
 
-  const {items, sandwich_m2} = getSandwichForProduct(productKey);
+  const qty = Number(state.qty||0);
+  const sU = surfaceUnit();
+  const sT = surfaceTot();
 
-  if(!productKey){
-    listEl.innerHTML = "<div style='opacity:.7;'>Choisis un produit pour afficher la composition.</div>";
-    m2El.textContent = euro(0);
-    totEl.textContent = euro(0);
-    return;
-  }
+  suEl.textContent = fmtM2(sU);
 
-  // Surface unité
-  const L = Number(state.L || 0);
-  const H = Number(state.H || 0);
-  const qty = Number(state.qty || 1);
-  const surfaceUnit = L * H;
-  const surfaceTot  = surfaceUnit * qty;
+  // Sandwich = seulement lignes MAT au m² (PU au m²)
+  const matLines = state.lines.filter(l => l.group === "MAT");
+  let sandwich_m2 = 0;
 
-  // HTML liste
-  if(items.length === 0){
-    listEl.innerHTML = "<div style='opacity:.7;'>Aucun composant “matière au m²” détecté pour ce produit.</div>";
-  } else {
-    listEl.innerHTML = items.map(it => `
+  // On calcule un €/m² à partir de la somme des pu des matières (puisqu’on applique déjà la majoration sur PU)
+  // Attention : on veut un sandwich standard “par m² de face” (donc basé sur sT = L*H*qty).
+  // Pour les caissons, on affichera quand même le sandwich “face” (vinyl/encre/lam sur face) + dibond dev dans la liste.
+  // On fait donc : (somme total matières) / surfaceTot (face) si surfaceTot>0
+  const totalMat = matLines.reduce((s,l)=>s + l.total, 0);
+  sandwich_m2 = (sT>0) ? (totalMat / sT) : 0;
+
+  if(matLines.length===0){
+    listEl.innerHTML = "<div class='muted'>Aucune matière détectée.</div>";
+  }else{
+    listEl.innerHTML = matLines.map(l=>`
       <div style="display:flex; justify-content:space-between; gap:12px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,.06);">
-        <div>${it.label}</div>
-        <div style="font-weight:600;">${euro(it.pu)} <span style="opacity:.7; font-weight:400;">/m²</span></div>
+        <div>${esc(l.label)}</div>
+        <div style="font-weight:600;">${fmt(l.total)}</div>
       </div>
     `).join("");
   }
 
-  m2El.textContent = euro(sandwich_m2);
-  totEl.textContent = euro(sandwich_m2 * surfaceTot);
+  m2El.textContent = fmt(sandwich_m2);
+  totEl.textContent = fmt(sandwich_m2 * sT);
 }
 
+/** =====================
+ *  CALC + KPI
+ *  ===================== */
+function recalc(){
+  // rebuild lines
+  state.lines = buildLines();
 
-  // =====================
-  // 8) RENDER KPIs
-  // =====================
-  function recalc(){
-    const q = calcQuote();
+  // totals
+  const mat = state.lines.reduce((s,l)=>s + (l.total||0), 0);
 
-    byId("k_mat").textContent = fmt(q.mat);
-    byId("k_labor").textContent = fmt(q.labor);
-    byId("k_ovh").textContent = fmt(q.ovh);
-    byId("k_ovhp").textContent = Number(state.overheadPct||0).toLocaleString('fr-FR',{maximumFractionDigits:1});
-    byId("k_cost").textContent = fmt(q.cost);
-    byId("k_sell_ht").textContent = fmt(q.sellHT);
-    byId("k_markup").textContent = fmt(q.markup);
-    byId("k_area").textContent = (q.surfaceUnit||0).toLocaleString('fr-FR',{maximumFractionDigits:3});
+  const atelier = state.lines.filter(l=>l.group==="ATELIER").reduce((s,l)=>s+(l.total||0),0);
+  const pose = state.lines.filter(l=>l.group==="POSE").reduce((s,l)=>s+(l.total||0),0);
 
-    byId("u_cost").textContent = fmt(q.uCost);
-    byId("u_sell_ht").textContent = fmt(q.uSellHT);
+  const direct = mat; // tout est déjà dans lignes
+  const ovh = direct*(Number(state.overheadPct||0)/100) + Number(state.overheadFlat||0);
+  const cost = direct + ovh;
 
-    byId("k_lh").textContent = Number(state.pose_h||0).toLocaleString('fr-FR',{maximumFractionDigits:2});
-    byId("k_lr").textContent = Number(byId("ratePose").value||0).toLocaleString('fr-FR',{maximumFractionDigits:2});
+  const coef = Number(state.coef||0);
+  const useCoef = coef>0;
+  const marginPct = (Number(state.marginPct||0)/100);
+  const sellHT = useCoef ? cost*coef : (marginPct<1 ? cost/(1-marginPct) : cost);
 
-    byId("k_margin_used").textContent = q.useCoef
-      ? `Coefficient ${q.coef.toLocaleString('fr-FR',{maximumFractionDigits:2})}`
-      : `Marge ${Number(state.marginPct||0).toLocaleString('fr-FR',{maximumFractionDigits:1})}%`;
-    renderComposition();
+  const qty = Number(state.qty||0);
+  const uCost = (qty>0) ? cost/qty : 0;
+  const uSell = (qty>0) ? sellHT/qty : 0;
 
+  // KPIs
+  byId("k_mat").textContent = fmt(mat);
+  // atelier hours displayed
+  const atelierHours = state.lines.filter(l=>l.group==="ATELIER").reduce((s,l)=> s + (l.qty||0), 0);
+  byId("k_atelier").textContent = fmt(atelier);
+  byId("k_ah").textContent = Number(atelierHours||0).toLocaleString('fr-FR',{maximumFractionDigits:2});
+  byId("k_ar").textContent = Number(state.atelier_rate||0).toLocaleString('fr-FR',{maximumFractionDigits:2});
 
-    // Met à jour “Qté auto” et “Total” dans l’affichage composants
-    const rows = byId("lines").querySelectorAll(".row");
-    // Recalcule pour récupérer les lignes détaillées
-    const lines = q.lines;
+  byId("k_pose").textContent = fmt(pose);
+  byId("k_ovh").textContent = fmt(ovh);
+  byId("k_ovhp").textContent = Number(state.overheadPct||0).toLocaleString('fr-FR',{maximumFractionDigits:1});
 
-    let compRowIndex = 0;
-    for (let i=0; i<state.compSelections.length; i++){
-      const sel = state.compSelections[i];
-      const def = COMPONENTS[sel.compKey];
-      if (!def) continue;
-      const row = rows[compRowIndex++];
-      if (!row) break;
+  byId("k_cost").textContent = fmt(cost);
+  byId("k_sell_ht").textContent = fmt(sellHT);
+  byId("k_margin_used").textContent = useCoef ? `Coefficient ${coef.toLocaleString('fr-FR')}` : `Marge ${Number(state.marginPct||0).toLocaleString('fr-FR')}%`;
 
-      // Qté auto / Total : on cherche la ligne correspondante
-      const found = lines.find(l => l.key === def.key);
-      const qtyInput = row.querySelectorAll('input')[1];
-      const totalInput = row.querySelectorAll('input')[3];
+  byId("u_cost").textContent = fmt(uCost);
+  byId("u_sell_ht").textContent = fmt(uSell);
 
-      if (sel.checked && found){
-        qtyInput.value = `${found.qty.toLocaleString('fr-FR',{maximumFractionDigits:3})}`;
-        totalInput.value = fmt(found.total);
-      } else {
-        qtyInput.value = "—";
-        totalInput.value = "—";
-      }
-    }
-  }
-
-  // =====================
-  // 9) BIND TOP FIELDS
-  // =====================
-  function bindAll(){
-    const bind = (id, key, transform=(v)=>v) => {
-      byId(id).addEventListener("input", (e)=>{ state[key] = transform(e.target.value); recalc(); });
-      byId(id).addEventListener("change", (e)=>{ state[key] = transform(e.target.value); recalc(); });
-    };
-
-    bind("productName","productName",(v)=>v);
-    bind("L","L",(v)=>Number(v||0));
-    bind("H","H",(v)=>Number(v||0));
-    bind("qty","qty",(v)=>Number(v||0));
-
-    bind("overheadPct","overheadPct",(v)=>Number(v||0));
-    bind("overheadFlat","overheadFlat",(v)=>Number(v||0));
-    bind("marginPct","marginPct",(v)=>Number(v||0));
-    bind("coef","coef",(v)=>v);
-
-    byId("notes").addEventListener("input",(e)=>{ state.notes = e.target.value; });
-
-    // Options
-    byId("infographie_on").addEventListener("change",(e)=>{ state.infographie_on = !!e.target.checked; recalc(); });
-    bind("infographie_h","infographie_h",(v)=>Number(v||0));
-
-    bind("pose_h","pose_h",(v)=>Number(v||0));
-    byId("deplacement_on").addEventListener("change",(e)=>{ state.deplacement_on = !!e.target.checked; recalc(); });
-    bind("deplacement_pu","deplacement_pu",(v)=>Number(v||0));
-    bind("nacelle_j","nacelle_j",(v)=>Number(v||0));
-    bind("nacelle_pu","nacelle_pu",(v)=>Number(v||0));
-    bind("poteaux_nb","poteaux_nb",(v)=>Number(v||0));
-    bind("poteaux_pu","poteaux_pu",(v)=>Number(v||0));
-    bind("plots_nb","plots_nb",(v)=>Number(v||0));
-    bind("plots_pu","plots_pu",(v)=>Number(v||0));
-    bind("scellement_h","scellement_h",(v)=>Number(v||0));
-
-    // Rates -> RULES via recalc()
-    ["rateAtelier","ratePose","rateInfographie","rateScellement","smallAreaMarkupPct"].forEach(id=>{
-      byId(id).addEventListener("input", recalc);
-      byId(id).addEventListener("change", recalc);
-    });
-
-    // PoseMode
-    byId("poseMode").addEventListener("change",(e)=>{ state.poseMode = e.target.value; recalc(); });
-
-    // Buttons
-    byId("addLine").addEventListener("click", ()=>{
-      state.freeLines.push(defaultFreeLine());
-      renderLines(); recalc();
-    });
-
-    byId("reset").addEventListener("click", ()=>{
-      state = {
-        family:"",
-        productKey:"",
-        productName:"",
-        L:1.2, H:0.8, qty:1,
-        compSelections:[],
-        freeLines:[],
-        poseMode:"SANS_POSE",
-        pose_h:0,
-        deplacement_on:false, deplacement_pu:0,
-        nacelle_j:0, nacelle_pu:0,
-        poteaux_nb:0, poteaux_pu:0,
-        plots_nb:0, plots_pu:0,
-        scellement_h:0,
-        infographie_on:false,
-        infographie_h:0,
-        overheadPct:15, overheadFlat:0,
-        marginPct:40, coef:"",
-        notes:""
-      };
-      initFamilyProduct();
-      renderLines(); recalc();
-    });
-
-    byId("save").addEventListener("click", ()=>{
-      localStorage.setItem("graphicom_calc_ht_v2", JSON.stringify(state));
-      alert("Enregistré sur cet appareil.");
-    });
-
-    byId("load").addEventListener("click", ()=>{
-      const raw = localStorage.getItem("graphicom_calc_ht_v2");
-      if(!raw){ alert("Aucune sauvegarde trouvée."); return; }
-      state = JSON.parse(raw);
-      // Rebind fields values
-      hydrateUIFromState();
-      initFamilyProduct(true);
-      renderLines(); recalc();
-      alert("Chargé.");
-    });
-
-    byId("exportCsv").addEventListener("click", ()=>{
-      const q = calcQuote();
-      const rows = [];
-      rows.push(["Famille", state.family]);
-      rows.push(["Produit", PRODUCTS[state.productKey]?.label || ""]);
-      rows.push(["Nom", state.productName]);
-      rows.push(["L (m)", state.L]);
-      rows.push(["H (m)", state.H]);
-      rows.push(["Qté", state.qty]);
-      rows.push(["Surface/u (m2)", q.surfaceUnit]);
-      rows.push([]);
-      rows.push(["Lignes", "Unité", "Qté", "PU", "Total"]);
-      q.lines.forEach(ln => rows.push([ln.label, ln.unit, ln.qty, ln.pu, ln.total]));
-      rows.push([]);
-      rows.push(["Majoration <1m2", q.markup]);
-      rows.push(["Coûts lignes (HT)", q.mat]);
-      rows.push(["Frais structure", q.ovh]);
-      rows.push(["Prix de revient (HT)", q.cost]);
-      rows.push(["Vente HT", q.sellHT]);
-      rows.push([]);
-      rows.push(["Notes", state.notes]);
-
-      const csv = rows.map(r => r.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(";")).join("\n");
-      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "graphicom_calcul_ht.csv";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    });
-  }
-
-  function hydrateUIFromState(){
-    byId("productName").value = state.productName || "";
-    byId("L").value = state.L ?? 0;
-    byId("H").value = state.H ?? 0;
-    byId("qty").value = state.qty ?? 1;
-
-    byId("overheadPct").value = state.overheadPct ?? 0;
-    byId("overheadFlat").value = state.overheadFlat ?? 0;
-    byId("marginPct").value = state.marginPct ?? 0;
-    byId("coef").value = state.coef ?? "";
-
-    byId("notes").value = state.notes || "";
-
-    byId("infographie_on").checked = !!state.infographie_on;
-    byId("infographie_h").value = state.infographie_h ?? 0;
-
-    byId("pose_h").value = state.pose_h ?? 0;
-    byId("deplacement_on").checked = !!state.deplacement_on;
-    byId("deplacement_pu").value = state.deplacement_pu ?? 0;
-
-    byId("nacelle_j").value = state.nacelle_j ?? 0;
-    byId("nacelle_pu").value = state.nacelle_pu ?? 0;
-
-    byId("poteaux_nb").value = state.poteaux_nb ?? 0;
-    byId("poteaux_pu").value = state.poteaux_pu ?? 0;
-    byId("plots_nb").value = state.plots_nb ?? 0;
-    byId("plots_pu").value = state.plots_pu ?? 0;
-
-    byId("scellement_h").value = state.scellement_h ?? 0;
-
-    // Rates
-    byId("rateAtelier").value = RULES.rateAtelier;
-    byId("ratePose").value = RULES.ratePose;
-    byId("rateInfographie").value = RULES.rateInfographie;
-    byId("rateScellement").value = RULES.rateScellement;
-    byId("smallAreaMarkupPct").value = RULES.smallAreaMarkupPct;
-  }
-
-  // =====================
-  // 10) ORGANIGRAMME UI (Famille → Produit)
-  // =====================
-  function initFamilyProduct(keepSelection=false){
-    // Familles
-    const famSel = byId("family");
-    famSel.innerHTML = `<option value="">— Choisir une famille —</option>` + FAMILIES.map(f=>`<option value="${f}">${f}</option>`).join("");
-    famSel.value = keepSelection ? (state.family||"") : "";
-
-    // Produits (désactivé tant que famille non choisie)
-    const preset = byId("preset");
-    preset.disabled = !famSel.value;
-
-    function fillProductsForFamily(fam){
-      const options = Object.values(PRODUCTS)
-        .filter(p => p.family === fam)
-        .map(p => `<option value="${p.key}">${escapeHtml(p.label)}</option>`)
-        .join("");
-      preset.innerHTML = `<option value="">— Choisir un produit —</option>` + options;
-      preset.disabled = !fam;
-    }
-
-    fillProductsForFamily(famSel.value);
-
-    famSel.addEventListener("change",(e)=>{
-      state.family = e.target.value;
-      fillProductsForFamily(state.family);
-      state.productKey = "";
-      state.compSelections = [];
-      renderLines(); recalc();
-    });
-
-    preset.addEventListener("change",(e)=>{
-      state.productKey = e.target.value;
-      applyProductPreset(state.productKey);
-    });
-
-    // Pose modes
-    const poseSel = byId("poseMode");
-    poseSel.innerHTML = Object.values(POSE_MODES).map(m=>`<option value="${m.key}">${escapeHtml(m.label)}</option>`).join("");
-    poseSel.value = state.poseMode || "SANS_POSE";
-
-    // Restore selection if asked
-    if (keepSelection && state.family){
-      fillProductsForFamily(state.family);
-      preset.value = state.productKey || "";
-      if (state.productKey) applyProductPreset(state.productKey, true);
-    }
-  }
-
-  function applyProductPreset(productKey, silent=false){
-    const product = PRODUCTS[productKey];
-    if (!product) { renderLines(); recalc(); return; }
-
-    // Nom par défaut si vide
-    if (!state.productName) {
-      state.productName = product.label;
-      byId("productName").value = state.productName;
-    }
-
-    // Composants : liste + pré-coches
-    state.compSelections = product.components.map(c => ({
-      compKey: c.key,
-      checked: !!c.defaultOn
-    }));
-
-    // Pose : remet le mode de pose sur “sans” si pas compatible
-    if (product.poseModes && product.poseModes.length){
-      const ok = product.poseModes.includes(state.poseMode);
-      if (!ok) state.poseMode = product.poseModes[0];
-      byId("poseMode").value = state.poseMode;
-    }
-
-    // Rafraîchit
-    renderLines();
-    recalc();
-    if(!silent) alert("Préréglage appliqué. Tu peux cocher/décocher et ajuster les PU.");
-  }
-
-  // =====================
-  // INIT
-  // =====================
-  bindAll();
-  hydrateUIFromState();
-  initFamilyProduct();
   renderLines();
+  renderComposition();
+}
+
+/** =====================
+ *  SAVE / LOAD / EXPORT
+ *  ===================== */
+byId("reset").addEventListener("click", ()=>{
+  state = defaultState();
+  // resync UI
+  byId("family").value = state.familyKey;
+  fillProductSelect();
+  byId("preset").value = state.productKey;
+  byId("productName").value = state.productName;
+
+  byId("L").value = state.L;
+  byId("H").value = state.H;
+  byId("P").value = state.P;
+  byId("qty").value = state.qty;
+  byId("cncHperM2").value = state.cncHperM2;
+
+  byId("infog_on").checked = state.infog_on;
+  byId("infog_h").value = state.infog_h;
+  byId("infog_rate").value = state.infog_rate;
+
+  byId("poseMode").value = state.poseMode;
+  byId("pose_h").value = state.pose_h;
+  byId("pose_rate").value = state.pose_rate;
+  byId("depl_forfait").value = state.deplacement_forfait;
+  byId("nacelle_j").value = state.nacelle_j;
+  byId("nacelle_pu").value = state.nacelle_pu;
+  byId("poteaux_nb").value = state.poteaux_nb;
+  byId("poteau_pu").value = state.poteau_pu;
+  byId("plots_nb").value = state.plots_nb;
+  byId("plot_pu").value = state.plot_pu;
+  byId("scellement_h").value = state.scellement_h;
+
+  byId("entretoise_pu").value = state.entretoise_pu;
+  byId("structure_pu").value = state.structure_pu;
+
+  byId("atelier_rate").value = state.atelier_rate;
+  byId("small_markup").value = state.small_markup_pct;
+  byId("overheadPct").value = state.overheadPct;
+  byId("overheadFlat").value = state.overheadFlat;
+  byId("marginPct").value = state.marginPct;
+  byId("coef").value = state.coef;
+  byId("notes").value = state.notes;
+
   recalc();
+});
+
+byId("save").addEventListener("click", ()=>{
+  localStorage.setItem("graphicom_pricing_v2", JSON.stringify(state));
+  alert("Enregistré sur cet appareil.");
+});
+
+byId("load").addEventListener("click", ()=>{
+  const raw = localStorage.getItem("graphicom_pricing_v2");
+  if(!raw){ alert("Aucune sauvegarde trouvée."); return; }
+  state = JSON.parse(raw);
+
+  // UI sync minimal
+  byId("family").value = state.familyKey;
+  fillProductSelect();
+  byId("preset").value = state.productKey;
+  fillPoseModes();
+  byId("poseMode").value = state.poseMode;
+
+  // bind values
+  byId("productName").value = state.productName||"";
+  byId("L").value = state.L||0;
+  byId("H").value = state.H||0;
+  byId("P").value = state.P||0;
+  byId("qty").value = state.qty||0;
+  byId("cncHperM2").value = state.cncHperM2||0;
+
+  byId("infog_on").checked = !!state.infog_on;
+  byId("infog_h").value = state.infog_h||0;
+  byId("infog_rate").value = state.infog_rate||0;
+
+  byId("pose_h").value = state.pose_h||0;
+  byId("pose_rate").value = state.pose_rate||0;
+  byId("depl_forfait").value = state.deplacement_forfait||0;
+  byId("nacelle_j").value = state.nacelle_j||0;
+  byId("nacelle_pu").value = state.nacelle_pu||0;
+  byId("poteaux_nb").value = state.poteaux_nb||0;
+  byId("poteau_pu").value = state.poteau_pu||0;
+  byId("plots_nb").value = state.plots_nb||0;
+  byId("plot_pu").value = state.plot_pu||0;
+  byId("scellement_h").value = state.scellement_h||0;
+
+  byId("entretoise_pu").value = state.entretoise_pu||0;
+  byId("structure_pu").value = state.structure_pu||0;
+
+  byId("atelier_rate").value = state.atelier_rate||0;
+  byId("small_markup").value = state.small_markup_pct||0;
+  byId("overheadPct").value = state.overheadPct||0;
+  byId("overheadFlat").value = state.overheadFlat||0;
+  byId("marginPct").value = state.marginPct||0;
+  byId("coef").value = state.coef||"";
+  byId("notes").value = state.notes||"";
+
+  recalc();
+  alert("Chargé.");
+});
+
+byId("exportCsv").addEventListener("click", ()=>{
+  const rows = [];
+  rows.push(["Produit", state.productName]);
+  rows.push(["Famille", state.familyKey]);
+  rows.push(["Préréglage", state.productKey]);
+  rows.push(["L", state.L]);
+  rows.push(["H", state.H]);
+  rows.push(["P", state.P]);
+  rows.push(["Qté", state.qty]);
+  rows.push([]);
+
+  rows.push(["Lignes", "Qté", "PU", "Total", "Groupe"]);
+  state.lines.forEach(ln => rows.push([ln.label, ln.qty, ln.pu, ln.total, ln.group]));
+  rows.push([]);
+
+  const mat = state.lines.reduce((s,l)=>s + (l.total||0), 0);
+  const direct = mat;
+  const ovh = direct*(Number(state.overheadPct||0)/100) + Number(state.overheadFlat||0);
+  const cost = direct + ovh;
+  const coef = Number(state.coef||0);
+  const useCoef = coef>0;
+  const marginPct = (Number(state.marginPct||0)/100);
+  const sellHT = useCoef ? cost*coef : (marginPct<1 ? cost/(1-marginPct) : cost);
+
+  rows.push(["Coûts lignes", mat]);
+  rows.push(["Frais structure", ovh]);
+  rows.push(["Prix de revient", cost]);
+  rows.push(["Vente HT", sellHT]);
+  rows.push([]);
+
+  const csv = rows.map(r => r.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(";")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "graphicom_calcul_HT.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/** =====================
+ *  INIT
+ *  ===================== */
+fillFamilySelect();
+fillProductSelect();
+fillPoseModes();
+bindInputs();
+syncProductNameDefault();
+recalc();
 </script>
 </body>
 </html>
