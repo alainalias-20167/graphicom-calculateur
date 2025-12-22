@@ -457,38 +457,37 @@ const RULES = {
 // =====================
 const COMPONENTS = {
   // --- Support / Matières (exemples, PU à remplir) ---
-  dibond_2:  { key:"dibond_2",  label:"Dibond 2 mm", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+  
+  dibond_3:  { key:"dibond_3",  label:"Dibond 3 mm", unit:"m2", defaultPu:17,20, group:"Support", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  dibond_3:  { key:"dibond_3",  label:"Dibond 3 mm", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
-              qtyFormula: ({surfaceTot}) => surfaceTot },
-  dibond_4:  { key:"dibond_4",  label:"Dibond 4 mm", unit:"m2", defaultPu:45, group:"Support", smallAreaEligible:true,
-              qtyFormula: ({surfaceTot}) => surfaceTot },
-
-  pvc_10:    { key:"pvc_10",    label:"PVC 10 mm",   unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+  
+  pvc_10:    { key:"pvc_10",    label:"PVC 10 mm",   unit:"m2", defaultPu:18,90, group:"Support", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
 
-  plexi_opale:{key:"plexi_opale",label:"Plexi opale", unit:"m2", defaultPu:0, group:"Support", smallAreaEligible:true,
+  plexi_transp_5mm:{key:"plexi_transp_5mm",label:"Plexi opale", unit:"m2", defaultPu:35,79, group:"Support", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
 
   // --- Impression / Films ---
-  vinyle_imprime:{ key:"vinyle_imprime", label:"Vinyle imprimé", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+  vinyle_imprime_poly:{ key:"vinyle_imprime", label:"Vinyle imprimé_poly", unit:"m2", defaultPu:3,8, group:"Impression", smallAreaEligible:true,
+              qtyFormula: ({surfaceTot}) => surfaceTot },
+  vinyle_imprime_mono:{ key:"vinyle_imprime", label:"Vinyle imprimé_mono", unit:"m2", defaultPu:1,62, group:"Impression", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
   vinyle_coule: { key:"vinyle_coule", label:"Vinyle coulé", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  vinyle_teinte:{ key:"vinyle_teinte", label:"Vinyle teinté masse", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+  vinyle_teinte:{ key:"vinyle_teinte", label:"Vinyle teinté masse", unit:"m2", defaultPu:6,13, group:"Impression", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  lamination:   { key:"lamination", label:"Lamination", unit:"m2", defaultPu:0, group:"Finition", smallAreaEligible:true,
+  lamination:   { key:"lamination", label:"Lamination", unit:"m2", defaultPu:3,63, group:"Finition", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  film_depoli:  { key:"film_depoli", label:"Film dépoli", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+  film_depoli:  { key:"film_depoli", label:"Film dépoli", unit:"m2", defaultPu:7,10, group:"Films", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  microperfore: { key:"microperfore", label:"Film microperforé", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+  microperfore: { key:"microperfore", label:"Film microperforé", unit:"m2", defaultPu:9,13, group:"Films", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  retro_reflech:{ key:"retro_reflech", label:"Film rétro-réfléchissant", unit:"m2", defaultPu:0, group:"Films", smallAreaEligible:true,
+  retro_reflech_cl1:{ key:"retro_reflech", label:"Film rétro-réfléchissant_cl1", unit:"m2", defaultPu:20,04, group:"Films", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
 
   uv_direct:    { key:"uv_direct", label:"Impression UV directe", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
-  encre_uv:     { key:"encre_uv", label:"Encre / coût machine UV", unit:"m2", defaultPu:0, group:"Impression", smallAreaEligible:true,
+  encre_uv:     { key:"encre_uv", label:"Encre / coût machine UV", unit:"m2", defaultPu:2,28, group:"Impression", smallAreaEligible:true,
               qtyFormula: ({surfaceTot}) => surfaceTot },
 
   // --- Éclairage (ml + alim oui/non) ---
